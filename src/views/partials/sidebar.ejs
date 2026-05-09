@@ -1,0 +1,67 @@
+<nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar py-3">
+  <div class="position-sticky">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard">
+          <i class="bi bi-speedometer2"></i> Dashboard
+        </a>
+      </li>
+
+      <% if (userLogin && userLogin.role === 'waka_sarpras') { %>
+        <li class="nav-item mt-2"><small class="text-muted px-3">MANAJEMEN</small></li>
+        <li class="nav-item">
+          <a class="nav-link" href="/pengguna">
+            <i class="bi bi-people"></i> Akun PJ
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/ruangan">
+            <i class="bi bi-door-closed"></i> Ruangan
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/barang">
+            <i class="bi bi-box-seam"></i> Semua Barang
+          </a>
+        </li>
+
+        <li class="nav-item mt-2"><small class="text-muted px-3">PENINDAKAN</small></li>
+        <li class="nav-item">
+          <a class="nav-link" href="/log-perbaikan">
+            <i class="bi bi-tools"></i> Barang Rusak
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/log-perbaikan/riwayat">
+            <i class="bi bi-clock-history"></i> Riwayat Perbaikan
+          </a>
+        </li>
+
+        <li class="nav-item mt-2"><small class="text-muted px-3">LAPORAN</small></li>
+        <li class="nav-item">
+          <a class="nav-link" href="/laporan">
+            <i class="bi bi-file-earmark-pdf"></i> Cetak Laporan
+          </a>
+        </li>
+      <% } else if (userLogin && userLogin.role === 'pj') { %>
+        <li class="nav-item mt-2"><small class="text-muted px-3">RUANGAN SAYA</small></li>
+        <li class="nav-item">
+          <a class="nav-link" href="/barang">
+            <i class="bi bi-box-seam"></i> Daftar Barang
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/barang/baru">
+            <i class="bi bi-plus-circle"></i> Input Barang
+          </a>
+        </li>
+      <% } %>
+
+      <li class="nav-item mt-3 border-top pt-2">
+        <a class="nav-link" href="/ganti-password">
+          <i class="bi bi-key"></i> Ganti Password
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>

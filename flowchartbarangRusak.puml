@@ -1,0 +1,24 @@
+@startuml SIPRAS-NT_Flowchart_TindakRusak
+start
+:PJ lapor kondisi barang = "Rusak";
+:Sistem update status barang;
+:Sistem catat di LogPerbaikan
+(tanggal_lapor);
+:Barang muncul di dashboard
+Waka Sarpras (highlight rusak);
+:Waka Sarpras login ke sistem;
+:Waka lihat daftar barang rusak; 
+:Waka tindak lanjut di luar sistem
+(panggil tukang/teknisi);
+if (Barang sudah diperbaiki?) then (ya)
+  :Waka klik "Tandai Sudah Diperbaiki";
+  :Sistem update kondisi = "Baik";
+  :Sistem update LogPerbaikan
+  (tanggal_selesai, ditangani_oleh);
+  :Tampilkan notifikasi sukses;
+else (tidak)
+  :Status tetap "Rusak";
+  :Tetap muncul di dashboard;
+endif
+stop
+@enduml

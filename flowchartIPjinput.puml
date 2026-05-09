@@ -1,0 +1,26 @@
+@startuml SIPRAS-NT_Flowchart_InputBarang
+start
+:PJ login ke sistem;
+if (Login valid?) then (ya)
+  :Masuk ke dashboard PJ;
+  :PJ pilih menu "Input Barang";
+  :Sistem tampilkan form input barang;
+  :PJ isi data barang
+  (kode, nama, kategori, jumlah, kondisi);
+  :PJ submit form;
+  if (Validasi data lengkap?) then (ya)
+    :Sistem simpan ke tabel Barang;
+    :Sistem catat audit trail
+    (dibuat_oleh = PJ);
+    :Tampilkan notifikasi sukses;
+    :Refresh daftar barang ruangan;
+  else (tidak)
+    :Tampilkan pesan error;
+    :Kembali ke form input;
+  endif
+else (tidak)
+  :Tampilkan pesan error login;
+  stop
+endif
+stop
+@enduml

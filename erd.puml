@@ -1,0 +1,97 @@
+@startuml SIPRAS-NT_ERD
+!define ENTITY(name) class name << (E,#FFAAAA) >>
+hide methods
+hide stereotypes
+skinparam classAttributeIconSize 0
+
+ENTITY(Pengguna) {
+  + id : UUID «PK»
+  --
+  nama : VARCHAR(100)  
+  username : VARCHAR(50) «UNIQUE»
+  password_hash : VARCHAR(255)
+  role : ENUM('waka_sarpras','pj')
+  aktif : BOOLEAN
+  dibuat_oleh : UUID «FK»
+  diperbarui_oleh : UUID «FK»
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+ENTITY(Ruangan) {
+  + id : UUID «PK»
+  --
+  nama_ruangan : VARCHAR(100)
+  kode_ruangan : VARCHAR(20) «UNIQUE»
+  pj_id : UUID «FK»
+  aktif : BOOLEAN
+  dibuat_oleh : UUID «FK»
+  diperbarui_oleh : UUID «FK»
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+ENTITY(Barang) {
+  + id : UUID «PK»
+  --
+  ruangan_id : UUID «FK»
+  kode_barang : VARCHAR(50) «UNIQUE»
+  nama_barang : VARCHAR(150)
+  kategori : VARCHAR(50)
+  jumlah : INT
+  kondisi : ENUM('baik','rusak')
+  keterangan : TEXT
+  dibuat_oleh : UUID «FK»
+  diperbarui_oleh : UUID «FK»
+  aktif : BOOLEAN
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+ENTITY(LogPerbaikan) {
+  + id : UUID «PK»
+  --
+  barang_id : UUID «FK»
+  ditangani_oleh : UUID «FK»
+  catatan : TEXT
+  tanggal_lapor : TIMESTAMP
+  tanggal_selesai : TIMESTAMP
+}
+
+Pengguna ||--o{ Ruangan : "menjadi PJ"
+Ruangan ||--o{ Barang : "memiliki"
+Pengguna ||--o{ Barang : "input/edit"
+Barang ||--o{ LogPerbaikan : "memiliki riwayat"
+Pengguna ||--o{ LogPerbaikan : "menangani"
+Pengguna ||--o{ Pengguna : "audit (dibuat/diperbarui)"
+Pengguna ||--o{ Ruangan : "audit (dibuat/diperbarui)"
+
+note right of Pengguna
+  Single-table inheritance:
+  Waka Sarpras & PJ disimpan
+  di satu tabel, dibedakan
+  via kolom 'role'.
+  Audit trail: dibuat_oleh
+  & diperbarui_oleh.
+end note
+
+note right of Ruangan
+  Soft delete via 'aktif'.
+  Audit trail: dibuat_oleh
+  & diperbarui_oleh.
+end note
+
+note right of Barang
+  Soft delete via 'aktif'.
+  Audit trail via dibuat_oleh
+  & diperbarui_oleh.
+end note
+
+note right of LogPerbaikan
+  Tracking penindakan barang
+  rusak oleh Waka Sarpras.
+  Tabel ini sendiri sudah
+  jadi audit log barang rusak.
+end note
+
+@enduml

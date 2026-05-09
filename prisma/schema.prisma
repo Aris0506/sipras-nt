@@ -1,0 +1,125 @@
+// =====================================================
+// SIPRAS-NT — Prisma Schema
+// Sumber: erd.puml (4 tabel utama + Session auto-managed)
+// =====================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------
+// Enum
+// -----------------------------------------------------
+enum Role {
+  waka_sarpras
+  pj
+}
+
+enum Kondisi {
+  baik
+  rusak
+}
+
+// -----------------------------------------------------
+// Pengguna (Single-Table Inheritance: waka_sarpras + pj)
+// -----------------------------------------------------
+model Pengguna {
+  id            String   @id @default(uuid()) @db.Uuid
+  nama          String   @db.VarChar(100)
+  username      String   @unique @db.VarChar(50)
+  passwordHash  String   @map("password_hash") @db.VarChar(255)
+  role          Role
+  aktif         Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relasi balik
+  ruanganDipegang     Ruangan[]      @relation("PJRuangan")
+  barangDibuat        Barang[]       @relation("BarangDibuatOleh")
+  barangDiperbarui    Barang[]       @relation("BarangDiperbaruiOleh")
+  logPerbaikanDitangani LogPerbaikan[] @relation("LogDitanganiOleh")
+
+  @@map("pengguna")
+}
+
+// -----------------------------------------------------
+// Ruangan
+// -----------------------------------------------------
+model Ruangan {
+  id            String   @id @default(uuid()) @db.Uuid
+  namaRuangan   String   @map("nama_ruangan") @db.VarChar(100)
+  kodeRuangan   String   @unique @map("kode_ruangan") @db.VarChar(20)
+  pjId          String?  @map("pj_id") @db.Uuid
+  aktif         Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  pj            Pengguna? @relation("PJRuangan", fields: [pjId], references: [id], onDelete: SetNull)
+  barang        Barang[]
+
+  @@map("ruangan")
+}
+
+// -----------------------------------------------------
+// Barang (audit trail: dibuat_oleh, diperbarui_oleh)
+// -----------------------------------------------------
+model Barang {
+  id              String   @id @default(uuid()) @db.Uuid
+  ruanganId       String   @map("ruangan_id") @db.Uuid
+  kodeBarang      String   @unique @map("kode_barang") @db.VarChar(50)
+  namaBarang      String   @map("nama_barang") @db.VarChar(150)
+  kategori        String   @db.VarChar(50)
+  jumlah          Int      @default(1)
+  kondisi         Kondisi  @default(baik)
+  keterangan      String?  @db.Text
+  dibuatOleh      String   @map("dibuat_oleh") @db.Uuid
+  diperbaruiOleh  String?  @map("diperbarui_oleh") @db.Uuid
+  aktif           Boolean  @default(true)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  ruangan         Ruangan       @relation(fields: [ruanganId], references: [id], onDelete: Restrict)
+  pembuat         Pengguna      @relation("BarangDibuatOleh", fields: [dibuatOleh], references: [id], onDelete: Restrict)
+  pemerbarui      Pengguna?     @relation("BarangDiperbaruiOleh", fields: [diperbaruiOleh], references: [id], onDelete: SetNull)
+  logPerbaikan    LogPerbaikan[]
+
+  @@index([ruanganId])
+  @@index([kondisi])
+  @@map("barang")
+}
+
+// -----------------------------------------------------
+// LogPerbaikan
+// -----------------------------------------------------
+model LogPerbaikan {
+  id              String    @id @default(uuid()) @db.Uuid
+  barangId        String    @map("barang_id") @db.Uuid
+  ditanganiOleh   String?   @map("ditangani_oleh") @db.Uuid
+  catatan         String?   @db.Text
+  tanggalLapor    DateTime  @default(now()) @map("tanggal_lapor")
+  tanggalSelesai  DateTime? @map("tanggal_selesai")
+
+  barang          Barang    @relation(fields: [barangId], references: [id], onDelete: Cascade)
+  penindak        Pengguna? @relation("LogDitanganiOleh", fields: [ditanganiOleh], references: [id], onDelete: SetNull)
+
+  @@index([barangId])
+  @@map("log_perbaikan")
+}
+
+// -----------------------------------------------------
+// Session (di-manage otomatis oleh connect-pg-simple,
+// schema ini hanya untuk introspection/dokumentasi)
+// -----------------------------------------------------
+model Session {
+  sid     String   @id @db.VarChar
+  sess    Json     @db.Json
+  expire  DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+  @@map("session")
+}

@@ -1,0 +1,60 @@
+@startuml SIPRAS-NT_Arsitektur
+!define RECTANGLE class
+skinparam componentStyle rectangle
+skinparam backgroundColor white
+
+actor "Waka Sarpras" as WS
+actor "PJ Ruangan" as PJ
+  
+cloud "Internet" as Internet
+
+package "Client Layer" {
+  component "Browser\n(Desktop / Mobile)" as Browser
+}
+
+package "Application Layer (Railway)" {
+  component "Express.js Server\n+ EJS Template Engine" as Server
+  component "Middleware\n(Auth + RBAC)" as Middleware
+  component "Prisma ORM" as Prisma
+  component "PDFKit\n(Export PDF)" as PDF
+}
+
+package "Data Layer (Supabase)" {
+  database "PostgreSQL" as DB {
+    frame "Tables" {
+      [Pengguna]
+      [Ruangan]
+      [Barang]
+      [LogPerbaikan]
+      [Session]
+    }
+  }
+}
+
+WS --> Browser
+PJ --> Browser
+Browser <--> Internet
+Internet <--> Server
+Server --> Middleware
+Middleware --> Prisma
+Prisma <--> DB
+Server --> PDF
+
+note right of Server
+  Hosting: Railway
+  CI/CD: GitHub Actions
+  (auto-deploy on push)
+end note
+
+note right of DB
+  Hosting: Supabase
+  Region: Singapore
+end note
+
+note bottom of Middleware
+  bcryptjs untuk password
+  express-session + connect-pg-simple
+  untuk session management
+end note
+
+@enduml

@@ -1,0 +1,26 @@
+<% if (flashSukses && flashSukses.length) { %>
+  <% flashSukses.forEach(function(p) { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class="bi bi-check-circle"></i> <%= p %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }) %>
+<% } %>
+
+<% if (flashError && flashError.length) { %>
+  <% flashError.forEach(function(p) { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class="bi bi-exclamation-triangle"></i> <%= p %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }) %>
+<% } %>
+
+<% if (flashInfo && flashInfo.length) { %>
+  <% flashInfo.forEach(function(p) { %>
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      <i class="bi bi-info-circle"></i> <%= p %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+  <% }) %>
+<% } %>

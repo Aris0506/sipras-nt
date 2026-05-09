@@ -1,0 +1,70 @@
+@startuml SIPRAS-NT_UseCase
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor "Waka Sarpras" as WS
+actor "PJ Ruangan" as PJ
+
+rectangle "SIPRAS-NT" {
+  
+  package "Autentikasi" {
+    usecase "Login" as UC1
+    usecase "Logout" as UC2
+    usecase "Reset Password PJ" as UC3
+  }
+
+  package "Manajemen Pengguna" {
+    usecase "Kelola Akun PJ" as UC4
+    usecase "Nonaktifkan Akun PJ" as UC5
+  }
+
+  package "Manajemen Ruangan" {
+    usecase "Kelola Data Ruangan" as UC6
+    usecase "Tetapkan PJ Ruangan" as UC7
+  }
+
+  package "Inventaris Barang" {
+    usecase "Input Barang" as UC8
+    usecase "Edit Barang" as UC9
+    usecase "Lapor Kondisi Barang" as UC10
+    usecase "Lihat Barang Ruangan Sendiri" as UC11
+    usecase "Lihat Semua Barang" as UC12
+  }
+
+  package "Penindakan Barang Rusak" {
+    usecase "Lihat Daftar Barang Rusak" as UC13
+    usecase "Tandai Sudah Diperbaiki" as UC14
+  }
+
+  package "Monitoring & Laporan" {
+    usecase "Lihat Dashboard" as UC15
+    usecase "Cetak Laporan Per Ruangan" as UC16
+    usecase "Cetak Laporan Rekap" as UC17
+  }
+}
+
+' Relasi Waka Sarpras
+WS --> UC1
+WS --> UC2
+WS --> UC3
+WS --> UC4
+WS --> UC5
+WS --> UC6
+WS --> UC7
+WS --> UC12
+WS --> UC13
+WS --> UC14
+WS --> UC15
+WS --> UC16
+WS --> UC17
+
+' Relasi PJ Ruangan
+PJ --> UC1
+PJ --> UC2
+PJ --> UC8
+PJ --> UC9
+PJ --> UC10
+PJ --> UC11
+
+@enduml
