@@ -1,6 +1,5 @@
 // =====================================================
 // SIPRAS-NT — Frontend JS
-// Theme toggle (light/dark) + sidebar mobile
 // =====================================================
 
 (function () {
@@ -22,11 +21,8 @@
     }
   }
 
-  // Inisialisasi: baca dari localStorage, fallback ke preference OS
   const temaTersimpan = localStorage.getItem(KUNCI_TEMA);
-  const temaOS = window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
+  const temaOS = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   terapkanTema(temaTersimpan || temaOS);
 
   if (tombolTema) {
@@ -58,7 +54,7 @@
     overlay.addEventListener('click', tutupSidebar);
   }
 
-// ---------- Toast Notification ----------
+  // ---------- Toast Notification ----------
   (function () {
     const container = document.getElementById('toastContainer');
     if (!container) return;
@@ -71,21 +67,18 @@
       let waktuMulai = Date.now();
       let waktuTersisa = durasi;
 
-      // Pause animasi & timer pas hover
       toast.addEventListener('mouseenter', function () {
         clearTimeout(timer);
         toast.classList.add('toast-pause');
         waktuTersisa -= Date.now() - waktuMulai;
       });
 
-      // Resume pas mouse keluar
       toast.addEventListener('mouseleave', function () {
         toast.classList.remove('toast-pause');
         waktuMulai = Date.now();
         timer = setTimeout(() => tutupToast(toast), waktuTersisa);
       });
 
-      // Tombol close
       const tombolTutup = toast.querySelector('.toast-tutup');
       if (tombolTutup) {
         tombolTutup.addEventListener('click', function () {
@@ -101,7 +94,7 @@
     }
   })();
 
- // ---------- Highlight active nav link ----------
+  // ---------- Highlight active nav link ----------
   const path = window.location.pathname;
   document.querySelectorAll('.sipras-sidebar .nav-link').forEach(function (link) {
     const href = link.getAttribute('href');
@@ -111,7 +104,7 @@
     }
   });
 
-  // ---------- Confirm Modal (replace native window.confirm) ----------
+  // ---------- Confirm Modal ----------
   (function () {
     const modal = document.getElementById('confirmModal');
     if (!modal) return;
@@ -128,7 +121,6 @@
       pesan.textContent = message || 'Apakah Anda yakin?';
       tombolOk.textContent = labelOk || 'Ya, Lanjutkan';
 
-      // Set varian ikon
       ikon.className = 'confirm-modal-icon';
       const ikonI = ikon.querySelector('i');
       if (varian === 'bahaya') {
@@ -158,38 +150,30 @@
       formAktif = null;
     }
 
-    // Handle klik tombol Cancel & backdrop
     modal.addEventListener('click', function (e) {
       const action = e.target.dataset.action;
       if (action === 'cancel') {
         tutupModal();
       } else if (action === 'ok') {
         if (formAktif) {
-          // Submit form yang di-trigger
           formAktif.dataset.confirmed = 'true';
           formAktif.submit();
         }
         tutupModal();
       }
-      
     });
 
-    // Tutup modal dengan tombol Esc
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && modal.classList.contains('aktif')) {
         tutupModal();
       }
     });
 
-    // Intercept semua form yang punya data-confirm
     document.addEventListener('submit', function (e) {
       const form = e.target;
       if (!(form instanceof HTMLFormElement)) return;
       if (!form.hasAttribute('data-confirm')) return;
-      if (form.dataset.confirmed === 'true') {
-        // Sudah di-confirm, biarkan submit
-        return;
-      }
+      if (form.dataset.confirmed === 'true') return;
 
       e.preventDefault();
       formAktif = form;
@@ -200,51 +184,44 @@
         labelOk: form.dataset.confirmOk,
       });
     });
-
-    // ---------- Toggle Show/Hide Password ----------
-    (function () {
-        document.querySelectorAll('input[type="password"]').forEach(function (input) {
-          // Skip kalau udah di-wrap
-          if (input.parentElement && input.parentElement.classList.contains('input-password-wrapper')) {
-            return;
-          }
-          // Skip kalau di dalam input-group Bootstrap (kayak di form barang)
-          if (input.closest('.input-group')) {
-            return;
-          }
-
-          // Wrap input dengan div
-          const wrapper = document.createElement('div');
-          wrapper.className = 'input-password-wrapper';
-          input.parentNode.insertBefore(wrapper, input);
-          wrapper.appendChild(input);
-
-          // Bikin tombol mata
-          const tombol = document.createElement('button');
-          tombol.type = 'button';
-          tombol.className = 'input-password-toggle';
-          tombol.setAttribute('aria-label', 'Tampilkan password');
-          tombol.innerHTML = '<i class="bi bi-eye"></i>';
-          wrapper.appendChild(tombol);
-
-          // Toggle handler
-          tombol.addEventListener('click', function () {
-            const ikon = tombol.querySelector('i');
-            if (input.type === 'password') {
-              input.type = 'text';
-              input.classList.add('is-password');
-              ikon.className = 'bi bi-eye-slash';
-              tombol.setAttribute('aria-label', 'Sembunyikan password');
-            } else {
-              input.type = 'password';
-              input.classList.remove('is-password');
-              ikon.className = 'bi bi-eye';
-              tombol.setAttribute('aria-label', 'Tampilkan password');
-            }
-          });
-        });
-    })();
   })();
- })();
 
+  // ---------- Toggle Show/Hide Password ----------
+  (function () {
+    document.querySelectorAll('input[type="password"]').forEach(function (input) {
+      if (input.parentElement && input.parentElement.classList.contains('input-password-wrapper')) {
+        return;
+      }
+      if (input.closest('.input-group')) {
+        return;
+      }
 
+      const wrapper = document.createElement('div');
+      wrapper.className = 'input-password-wrapper';
+      input.parentNode.insertBefore(wrapper, input);
+      wrapper.appendChild(input);
+
+      const tombol = document.createElement('button');
+      tombol.type = 'button';
+      tombol.className = 'input-password-toggle';
+      tombol.setAttribute('aria-label', 'Tampilkan password');
+      tombol.innerHTML = '<i class="bi bi-eye"></i>';
+      wrapper.appendChild(tombol);
+
+      tombol.addEventListener('click', function () {
+        const ikon = tombol.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          input.classList.add('is-password');
+          ikon.className = 'bi bi-eye-slash';
+          tombol.setAttribute('aria-label', 'Sembunyikan password');
+        } else {
+          input.type = 'password';
+          input.classList.remove('is-password');
+          ikon.className = 'bi bi-eye';
+          tombol.setAttribute('aria-label', 'Tampilkan password');
+        }
+      });
+    });
+  })();
+})();
