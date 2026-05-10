@@ -305,12 +305,24 @@ html { scroll-behavior: smooth; }
 /* Hero stats */
 .hero-stats {
   display: flex;
+  justify-content: flex-start; /* Rata Kiri untuk Laptop biar sejajar */
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
+  margin-top: 2rem;
 }
 
 .hero-stat {
   text-align: left;
+}
+
+/* Otomatis rata tengah kalau dibuka di HP / Tablet */
+@media (max-width: 992px) {
+  .hero-stats {
+    justify-content: center;
+  }
+  .hero-stat {
+    text-align: center;
+  }
 }
 
 .hero-stat-value {
