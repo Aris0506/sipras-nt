@@ -1,45 +1,121 @@
-<h3 class="mb-4"><i class="bi bi-speedometer2"></i> Dashboard</h3>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1">Selamat datang, <%= userLogin.nama %>.</h3>
+    <p class="page-subtitle">
+      <%= userLogin.role === 'waka_sarpras'
+            ? 'Pantau inventaris sekolah dan tindak lanjut barang rusak.'
+            : 'Kelola barang di ruangan yang Anda pegang.' %>
+    </p>
+  </div>
+</div>
 
 <% if (userLogin && userLogin.role === 'waka_sarpras') { %>
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card text-bg-primary">
-        <div class="card-body">
-          <h6 class="card-title">Total Ruangan</h6>
-          <p class="display-6 mb-0">—</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-success">
-        <div class="card-body">
-          <h6 class="card-title">Total Barang</h6>
-          <p class="display-6 mb-0">—</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-warning">
-        <div class="card-body">
-          <h6 class="card-title">Barang Rusak</h6>
-          <p class="display-6 mb-0">—</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-bg-info">
-        <div class="card-body">
-          <h6 class="card-title">PJ Aktif</h6>
-          <p class="display-6 mb-0">—</p>
-        </div>
-      </div>
-    </div>
-  </div>
-<% } else { %>
-  <div class="alert alert-info">
-    <i class="bi bi-info-circle"></i>
-    Selamat datang, <strong><%= userLogin?.nama %></strong>. Silakan kelola barang ruangan Anda melalui menu di samping.
-  </div>
-<% } %>
 
-<p class="text-muted">Halaman dashboard masih placeholder. Data akan diisi pada iterasi berikutnya.</p>
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card varian-primer">
+        <div class="stat-header">
+          <span class="stat-label">Total Ruangan</span>
+          <span class="stat-icon"><i class="bi bi-door-closed"></i></span>
+        </div>
+        <div class="stat-value"><%= statistik.totalRuangan %></div>
+        <div class="stat-meta"></div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card varian-sukses">
+        <div class="stat-header">
+          <span class="stat-label">Total Barang</span>
+          <span class="stat-icon"><i class="bi bi-box-seam"></i></span>
+        </div>
+        <div class="stat-value"><%= statistik.totalBarang %></div>
+        <div class="stat-meta"></div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card varian-aksen">
+        <div class="stat-header">
+          <span class="stat-label">Barang Rusak</span>
+          <span class="stat-icon"><i class="bi bi-tools"></i></span>
+        </div>
+        <div class="stat-value"><%= statistik.totalRusak %></div>
+        <div class="stat-meta">
+          <% if (statistik.totalRusak > 0) { %>Menunggu penindakan<% } %>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card varian-info">
+        <div class="stat-header">
+          <span class="stat-label">PJ Aktif</span>
+          <span class="stat-icon"><i class="bi bi-people"></i></span>
+        </div>
+        <div class="stat-value"><%= statistik.totalPjAktif %></div>
+        <div class="stat-meta"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Aksi Cepat</h5>
+      <p class="text-muted-utama small mb-3">
+        Mulai dari menambah akun PJ, lalu data ruangan, lalu tetapkan PJ. Setelah itu PJ bisa input barang.
+      </p>
+      <div class="d-flex flex-wrap gap-2">
+        <a href="/pengguna/baru" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-person-plus me-1"></i>Tambah PJ
+        </a>
+        <a href="/ruangan/baru" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-door-open me-1"></i>Tambah Ruangan
+        </a>
+        <a href="/laporan" class="btn btn-sm btn-outline-primary">
+          <i class="bi bi-file-earmark-pdf me-1"></i>Cetak Laporan
+        </a>
+      </div>
+    </div>
+  </div>
+
+<% } else { %>
+
+  <% if (barangRusakPJ > 0) { %>
+    <div class="alert alert-warning mb-4">
+      <i class="bi bi-exclamation-triangle me-1"></i>
+      Terdapat <strong><%= barangRusakPJ %> barang rusak</strong> di ruangan Anda yang menunggu penanganan Waka Sarpras.
+    </div>
+  <% } %>
+
+  <h5 class="mb-3">Ruangan yang Anda Pegang</h5>
+
+  <% if (ruanganDipegang.length === 0) { %>
+    <div class="empty-state">
+      <div class="empty-icon"><i class="bi bi-door-closed"></i></div>
+      <div class="empty-title">Belum Ada Ruangan</div>
+      <p>Anda belum ditetapkan sebagai PJ untuk ruangan manapun. Silakan hubungi Waka Sarpras.</p>
+    </div>
+  <% } else { %>
+    <div class="row g-3">
+      <% ruanganDipegang.forEach(function(r) { %>
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="card-title mb-0">
+                  <i class="bi bi-door-closed text-primary me-1"></i><%= r.namaRuangan %>
+                </h6>
+                <span class="badge varian-netral"><%= r.kodeRuangan %></span>
+              </div>
+              <p class="text-muted-utama small mb-3">
+                <i class="bi bi-box-seam me-1"></i><%= r._count.barang %> barang terdaftar
+              </p>
+              <a href="/barang?ruangan=<%= r.id %>" class="btn btn-sm btn-outline-primary">
+                Lihat & Kelola <i class="bi bi-arrow-right ms-1"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+
+<% } %>

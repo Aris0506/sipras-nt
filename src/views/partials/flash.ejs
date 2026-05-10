@@ -1,26 +1,39 @@
-<% if (flashSukses && flashSukses.length) { %>
-  <% flashSukses.forEach(function(p) { %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <i class="bi bi-check-circle"></i> <%= p %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <% }) %>
-<% } %>
+<%
+  // Kumpulkan semua flash messages jadi 1 array dengan metadata varian
+  const semuaToast = [];
 
-<% if (flashError && flashError.length) { %>
-  <% flashError.forEach(function(p) { %>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <i class="bi bi-exclamation-triangle"></i> <%= p %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <% }) %>
-<% } %>
+  // 1) Flash dari session (untuk pola POST-redirect-GET)
+  if (typeof flashSukses !== 'undefined' && flashSukses && flashSukses.length) {
+    flashSukses.forEach(p => semuaToast.push({ varian: 'sukses', ikon: 'check-circle-fill', pesan: p }));
+  }
+  if (typeof flashError !== 'undefined' && flashError && flashError.length) {
+    flashError.forEach(p => semuaToast.push({ varian: 'error', ikon: 'exclamation-circle-fill', pesan: p }));
+  }
+  if (typeof flashInfo !== 'undefined' && flashInfo && flashInfo.length) {
+    flashInfo.forEach(p => semuaToast.push({ varian: 'info', ikon: 'info-circle-fill', pesan: p }));
+  }
 
-<% if (flashInfo && flashInfo.length) { %>
-  <% flashInfo.forEach(function(p) { %>
-    <div class="alert alert-info alert-dismissible fade show" role="alert">
-      <i class="bi bi-info-circle"></i> <%= p %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-  <% }) %>
+  // 2) Errors lokal (untuk pola POST-render — validasi error tampil instant)
+  if (typeof errorsLokal !== 'undefined' && Array.isArray(errorsLokal) && errorsLokal.length) {
+    errorsLokal.forEach(p => semuaToast.push({ varian: 'error', ikon: 'exclamation-circle-fill', pesan: p }));
+  }
+%>
+
+<% if (semuaToast.length > 0) { %>
+  <div class="toast-container" id="toastContainer" data-durasi="4000">
+    <% semuaToast.forEach(function(t) { %>
+      <div class="toast-item varian-<%= t.varian %>" role="alert">
+        <div class="toast-isi">
+          <span class="toast-ikon"><i class="bi bi-<%= t.ikon %>"></i></span>
+          <div class="toast-pesan"><%= t.pesan %></div>
+          <button type="button" class="toast-tutup" aria-label="Tutup">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="toast-progress">
+          <div class="toast-progress-bar"></div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
 <% } %>

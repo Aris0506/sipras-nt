@@ -1,2 +1,61 @@
-<h3 class="mb-4">Form (placeholder)</h3>
-<p class="text-muted">Mode: <%= mode %></p>
+<div class="form-page-wrapper">
+  <div class="page-header">
+    <div>
+      <h3 class="mb-1"><%= mode === 'create' ? 'Tambah Akun PJ' : 'Edit Akun PJ' %></h3>
+      <p class="page-subtitle">
+        <%= mode === 'create'
+          ? 'Buat akun baru untuk penanggung jawab ruangan.'
+          : 'Perbarui data akun PJ yang sudah ada.' %>
+      </p>
+    </div>
+    <a href="/pengguna" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Kembali
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="<%= mode === 'create' ? '/pengguna' : '/pengguna/' + data.id + '?_method=PUT' %>">
+        <div class="mb-3">
+          <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+          <input type="text" name="nama" class="form-control" value="<%= data.nama %>" required maxlength="100" autofocus />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Username <span class="text-danger">*</span></label>
+          <input type="text" name="username" class="form-control" value="<%= data.username %>" required maxlength="50" />
+          <div class="form-text">Huruf kecil, angka, titik, underscore, atau strip. Contoh: pak.subur</div>
+        </div>
+
+        <% if (mode === 'create') { %>
+          <div class="alert alert-info">
+            <i class="bi bi-info-circle me-1"></i>
+            Password awal akan otomatis di-set ke <strong>sipras2026</strong>. Minta PJ segera mengganti setelah login pertama.
+          </div>
+        <% } %>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i><%= mode === 'create' ? 'Buat Akun' : 'Simpan Perubahan' %>
+          </button>
+          <a href="/pengguna" class="btn btn-outline-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <% if (mode === 'create') { %>
+    <div class="form-helper-card">
+      <div class="helper-title">
+        <i class="bi bi-lightbulb"></i>
+        Panduan Membuat Akun PJ
+      </div>
+      <ul class="helper-list">
+        <li>Gunakan <strong>nama lengkap</strong> sesuai data sekolah agar audit trail mudah ditelusuri.</li>
+        <li>Format username yang disarankan: <code>nama.belakang</code> atau <code>nama_panggilan</code>. Contoh: <code>pak.subur</code>, <code>bu.anu</code>.</li>
+        <li>PJ akan otomatis bisa login dengan password default <code>sipras2026</code>. Pastikan PJ langsung mengganti password setelah login pertama.</li>
+        <li>Jika PJ lupa password, Anda bisa <strong>reset password</strong> dari halaman daftar PJ.</li>
+      </ul>
+    </div>
+  <% } %>
+</div>

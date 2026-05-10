@@ -1,2 +1,159 @@
-<h3 class="mb-4">Halaman placeholder</h3>
-<p class="text-muted">View ini akan diisi pada iterasi berikutnya.</p>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1"><%= title %></h3>
+    <p class="page-subtitle">
+      <% if (userLogin.role === 'pj') { %>
+        Daftar barang di ruangan yang Anda pegang.
+      <% } else { %>
+        Semua barang dari seluruh ruangan sekolah.
+      <% } %>
+    </p>
+  </div>
+  <% if (userLogin.role === 'pj') { %>
+    <a href="/barang/baru" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>Input Barang
+    </a>
+  <% } %>
+</div>
+
+<!-- Filter -->
+<form class="card mb-3" method="GET" action="/barang">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-4">
+        <input type="text" name="q" class="form-control" placeholder="Cari nama, kode, atau kategori..." value="<%= filter.q %>" />
+      </div>
+      <div class="col-md-3">
+        <select name="ruangan" class="form-select">
+          <option value="">Semua Ruangan</option>
+          <% daftarRuanganFilter.forEach(function(r) { %>
+            <option value="<%= r.id %>" <%= filter.ruangan === r.id ? 'selected' : '' %>>
+              <%= r.kodeRuangan %> — <%= r.namaRuangan %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="kondisi" class="form-select">
+          <option value="">Semua Kondisi</option>
+          <option value="baik" <%= filter.kondisi === 'baik' ? 'selected' : '' %>>Baik</option>
+          <option value="rusak" <%= filter.kondisi === 'rusak' ? 'selected' : '' %>>Rusak</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select">
+          <option value="">Aktif (default)</option>
+          <option value="aktif" <%= filter.status === 'aktif' ? 'selected' : '' %>>Hanya Aktif</option>
+          <option value="nonaktif" <%= filter.status === 'nonaktif' ? 'selected' : '' %>>Nonaktif</option>
+        </select>
+      </div>
+      <div class="col-md-1 d-grid">
+        <button type="submit" class="btn btn-outline-primary">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- List -->
+<% if (daftarBarang.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon"><i class="bi bi-box-seam"></i></div>
+    <div class="empty-title">Belum Ada Barang</div>
+    <% if (userLogin.role === 'pj') { %>
+      <p>Mulai input barang ke ruangan yang Anda pegang.</p>
+      <a href="/barang/baru" class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Input Barang
+      </a>
+    <% } else { %>
+      <p>Belum ada barang yang diinput oleh PJ Ruangan manapun.</p>
+    <% } %>
+  </div>
+<% } else { %>
+  <div class="table-wrapper">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama Barang</th>
+            <th>Kategori</th>
+            <th>Ruangan</th>
+            <th class="text-center">Jumlah</th>
+            <th>Kondisi</th>
+            <% if (userLogin.role === 'waka_sarpras') { %>
+              <th>Diinput Oleh</th>
+            <% } %>
+            <th class="text-end">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% daftarBarang.forEach(function(b) { %>
+            <tr>
+              <td><code><%= b.kodeBarang %></code></td>
+              <td>
+                <strong><%= b.namaBarang %></strong>
+                <% if (!b.aktif) { %>
+                  <span class="badge varian-netral ms-1">Nonaktif</span>
+                <% } %>
+              </td>
+              <td><span class="badge varian-netral"><%= b.kategori %></span></td>
+              <td>
+                <small><%= b.ruangan.kodeRuangan %></small><br>
+                <%= b.ruangan.namaRuangan %>
+              </td>
+              <td class="text-center"><%= b.jumlah %></td>
+              <td>
+                <% if (b.kondisi === 'baik') { %>
+                  <span class="badge varian-sukses">Baik</span>
+                <% } else { %>
+                  <span class="badge varian-rusak"><i class="bi bi-tools me-1"></i>Rusak</span>
+                <% } %>
+              </td>
+              <% if (userLogin.role === 'waka_sarpras') { %>
+                <td class="small"><%= b.pembuat?.nama || '—' %></td>
+              <% } %>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="/barang/<%= b.id %>" class="btn btn-sm btn-outline-secondary" title="Detail">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  <% if (userLogin.role === 'pj') { %>
+                    <a href="/barang/<%= b.id %>/edit" class="btn btn-sm btn-outline-secondary" title="Edit">
+                      <i class="bi bi-pencil"></i>
+                    </a>
+                    <% if (b.kondisi === 'baik' && b.aktif) { %>
+                      <form action="/barang/<%= b.id %>/lapor-rusak" method="POST" class="m-0"
+                            data-confirm="Laporkan barang <%= b.namaBarang %> sebagai rusak? Waka Sarpras akan menindaklanjuti."
+                            data-confirm-title="Laporkan Barang Rusak"
+                            data-confirm-varian="bahaya"
+                            data-confirm-ok="Ya, Laporkan">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Lapor Rusak">
+                          <i class="bi bi-tools"></i>
+                        </button>
+                      </form>
+                    <% } %>
+                    <form action="/barang/<%= b.id %>/nonaktifkan" method="POST" class="m-0"
+                          data-confirm="<%= b.aktif ? 'Nonaktifkan' : 'Aktifkan kembali' %> barang <%= b.namaBarang %>?"
+                          data-confirm-title="<%= b.aktif ? 'Nonaktifkan Barang' : 'Aktifkan Barang' %>"
+                          data-confirm-varian="<%= b.aktif ? 'bahaya' : 'info' %>"
+                          data-confirm-ok="<%= b.aktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan' %>">
+                      <button type="submit" class="btn btn-sm btn-outline-secondary" title="<%= b.aktif ? 'Nonaktifkan' : 'Aktifkan' %>">
+                        <i class="bi bi-<%= b.aktif ? 'archive' : 'box-arrow-up' %>"></i>
+                      </button>
+                    </form>               
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <p class="text-muted-utama small mt-2">
+    Menampilkan <strong><%= daftarBarang.length %></strong> barang.
+  </p>
+<% } %>

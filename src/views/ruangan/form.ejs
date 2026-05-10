@@ -1,2 +1,76 @@
-<h3 class="mb-4">Form (placeholder)</h3>
-<p class="text-muted">Mode: <%= mode %></p>
+<div class="form-page-wrapper">
+  <div class="page-header">
+    <div>
+      <h3 class="mb-1"><%= mode === 'create' ? 'Tambah Ruangan' : 'Edit Ruangan' %></h3>
+      <p class="page-subtitle">
+        <%= mode === 'create'
+          ? 'Buat data ruangan baru dan opsional tetapkan PJ-nya.'
+          : 'Perbarui data ruangan dan PJ-nya.' %>
+      </p>
+    </div>
+    <a href="/ruangan" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Kembali
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="<%= mode === 'create' ? '/ruangan' : '/ruangan/' + data.id + '?_method=PUT' %>">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label">Nama Ruangan <span class="text-danger">*</span></label>
+            <input type="text" name="namaRuangan" class="form-control" value="<%= data.namaRuangan %>" required maxlength="100" autofocus placeholder="Contoh: Lab Komputer 1" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Kode <span class="text-danger">*</span></label>
+            <input type="text" name="kodeRuangan" class="form-control text-uppercase" value="<%= data.kodeRuangan %>" required maxlength="20" placeholder="LAB-01" />
+            <div class="form-text">Huruf kapital, angka, atau strip.</div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Penanggung Jawab (PJ)</label>
+            <select name="pjId" class="form-select">
+              <option value="">— Belum ditetapkan —</option>
+              <% daftarPj.forEach(function(pj) { %>
+                <option value="<%= pj.id %>" <%= data.pjId === pj.id ? 'selected' : '' %>>
+                  <%= pj.nama %> (<%= pj.username %>)
+                </option>
+              <% }) %>
+            </select>
+            <div class="form-text">
+              <% if (daftarPj.length === 0) { %>
+                <i class="bi bi-exclamation-triangle text-warning"></i>
+                Belum ada akun PJ aktif. <a href="/pengguna/baru">Tambah akun PJ dulu</a>.
+              <% } else { %>
+                Opsional. Bisa dikosongkan dan ditetapkan nanti.
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i><%= mode === 'create' ? 'Simpan Ruangan' : 'Simpan Perubahan' %>
+          </button>
+          <a href="/ruangan" class="btn btn-outline-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="form-helper-card">
+    <div class="helper-title">
+      <i class="bi bi-lightbulb"></i>
+      Tips Pengisian Data Ruangan
+    </div>
+    <ul class="helper-list">
+      <li>Gunakan <strong>nama ruangan</strong> yang sesuai dengan label fisik di sekolah agar mudah dikenali, misalnya <code>Lab Komputer 1</code>, <code>Kelas X-A</code>, <code>Ruang Guru</code>.</li>
+      <li>Format <strong>kode ruangan</strong> yang disarankan: <code>LAB-01</code>, <code>KLS-XA</code>, <code>RG-01</code>. Singkat tapi jelas.</li>
+      <li>Kode ruangan akan dipakai sebagai prefix kode barang otomatis. Contoh: barang di <code>LAB-01</code> akan dapat kode <code>LAB-01-001</code>, <code>LAB-01-002</code>, dst.</li>
+      <li>Setiap ruangan hanya bisa punya <strong>1 PJ</strong>. Tetapkan PJ sekarang atau nanti dari halaman daftar ruangan.</li>
+    </ul>
+  </div>
+</div>

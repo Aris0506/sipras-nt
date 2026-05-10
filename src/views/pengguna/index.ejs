@@ -1,2 +1,109 @@
-<h3 class="mb-4">Halaman placeholder</h3>
-<p class="text-muted">View ini akan diisi pada iterasi berikutnya.</p>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1">Akun PJ Ruangan</h3>
+    <p class="page-subtitle">Kelola akun penanggung jawab ruangan.</p>
+  </div>
+  <a href="/pengguna/baru" class="btn btn-primary">
+    <i class="bi bi-person-plus me-1"></i>Tambah PJ
+  </a>
+</div>
+
+<!-- Filter -->
+<form class="card mb-3" method="GET" action="/pengguna">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-7">
+        <input type="text" name="q" class="form-control" placeholder="Cari nama atau username..." value="<%= filter.q %>" />
+      </div>
+      <div class="col-md-3">
+        <select name="status" class="form-select">
+          <option value="">Semua Status</option>
+          <option value="aktif" <%= filter.status === 'aktif' ? 'selected' : '' %>>Aktif</option>
+          <option value="nonaktif" <%= filter.status === 'nonaktif' ? 'selected' : '' %>>Nonaktif</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-primary">
+          <i class="bi bi-search me-1"></i>Cari
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- List -->
+<% if (daftarPj.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon"><i class="bi bi-people"></i></div>
+    <div class="empty-title">Belum Ada Akun PJ</div>
+    <p>Mulai tambahkan akun PJ ruangan untuk mengelola inventaris.</p>
+    <a href="/pengguna/baru" class="btn btn-sm btn-primary">
+      <i class="bi bi-person-plus me-1"></i>Tambah PJ
+    </a>
+  </div>
+<% } else { %>
+  <div class="table-wrapper">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Username</th>
+            <th>Ruangan Dipegang</th>
+            <th>Status</th>
+            <th class="text-end">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% daftarPj.forEach(function(pj) { %>
+            <tr>
+              <td><strong><%= pj.nama %></strong></td>
+              <td><code><%= pj.username %></code></td>
+              <td>
+                <% if (pj.ruanganDipegang.length === 0) { %>
+                  <span class="text-muted-utama small">—</span>
+                <% } else { %>
+                  <% pj.ruanganDipegang.forEach(function(r, i) { %>
+                    <span class="badge varian-netral"><%= r.namaRuangan %></span><% if (i < pj.ruanganDipegang.length - 1) { %> <% } %>
+                  <% }) %>
+                <% } %>
+              </td>
+              <td>
+                <% if (pj.aktif) { %>
+                  <span class="badge varian-sukses">Aktif</span>
+                <% } else { %>
+                  <span class="badge varian-rusak">Nonaktif</span>
+                <% } %>
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex gap-1">
+                  <a href="/pengguna/<%= pj.id %>/edit" class="btn btn-sm btn-outline-secondary" title="Edit">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  <form action="/pengguna/<%= pj.id %>/reset-password" method="POST" class="m-0"
+                        data-confirm="Password PJ <%= pj.nama %> akan di-reset ke default (sipras2026). Lanjutkan?"
+                        data-confirm-title="Reset Password PJ"
+                        data-confirm-varian="info"
+                        data-confirm-ok="Reset Password">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Reset Password">
+                      <i class="bi bi-key"></i>
+                    </button>
+                  </form>
+                  <form action="/pengguna/<%= pj.id %>/nonaktifkan" method="POST" class="m-0"
+                        data-confirm="<%= pj.aktif ? 'Nonaktifkan' : 'Aktifkan kembali' %> akun PJ <%= pj.nama %>?"
+                        data-confirm-title="<%= pj.aktif ? 'Nonaktifkan Akun' : 'Aktifkan Akun' %>"
+                        data-confirm-varian="<%= pj.aktif ? 'bahaya' : 'info' %>"
+                        data-confirm-ok="<%= pj.aktif ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan' %>">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="<%= pj.aktif ? 'Nonaktifkan' : 'Aktifkan' %>">
+                      <i class="bi bi-<%= pj.aktif ? 'person-x' : 'person-check' %>"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>

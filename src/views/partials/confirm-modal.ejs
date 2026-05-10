@@ -1,0 +1,19 @@
+<!-- Confirm Modal — global, dipakai semua form yang butuh konfirmasi -->
+<div id="confirmModal" class="confirm-modal" aria-hidden="true">
+  <div class="confirm-modal-backdrop" data-action="cancel"></div>
+  <div class="confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirmModalTitle">
+    <div class="confirm-modal-icon" id="confirmModalIcon">
+      <i class="bi bi-question-circle"></i>
+    </div>
+    <h5 id="confirmModalTitle" class="confirm-modal-title">Konfirmasi</h5>
+    <p id="confirmModalPesan" class="confirm-modal-pesan">Apakah Anda yakin?</p>
+    <div class="confirm-modal-actions">
+      <button type="button" class="btn btn-outline-secondary" data-action="cancel">
+        Batal
+      </button>
+      <button type="button" class="btn btn-primary" id="confirmModalOk" data-action="ok">
+        Ya, Lanjutkan
+      </button>
+    </div>
+  </div>
+</div>

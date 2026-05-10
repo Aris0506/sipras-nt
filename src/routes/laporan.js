@@ -11,5 +11,6 @@ router.use(wajibLogin, hanyaWaka);
 router.get('/', c.indexLaporan);
 router.get('/per-ruangan/:ruanganId', c.laporanPerRuangan);
 router.get('/rekap', c.laporanRekap);
+router.get('/riwayat-perbaikan', c.laporanRiwayatPerbaikan);
 
 module.exports = router;

@@ -1,2 +1,146 @@
-<h3 class="mb-4">Halaman placeholder</h3>
-<p class="text-muted">View ini akan diisi pada iterasi berikutnya.</p>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1"><i class="bi bi-file-earmark-pdf text-primary me-1"></i>Cetak Laporan</h3>
+    <p class="page-subtitle">Cetak laporan inventaris sekolah dalam format PDF.</p>
+  </div>
+</div>
+
+<div class="row g-3">
+
+  <!-- Card: Laporan Rekap -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between mb-2">
+          <div>
+            <h5 class="card-title mb-1">Rekap Inventaris Sekolah</h5>
+            <p class="text-muted-utama small mb-0">
+              Ringkasan total ruangan, barang, dan barang rusak di seluruh sekolah.
+            </p>
+          </div>
+          <span class="stat-icon" style="background-color: var(--warna-primer-soft); color: var(--warna-primer);">
+            <i class="bi bi-bar-chart"></i>
+          </span>
+        </div>
+        <hr class="divider" />
+        <a href="/laporan/rekap" target="_blank" class="btn btn-primary btn-sm">
+          <i class="bi bi-eye me-1"></i>Lihat & Cetak
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Laporan Riwayat Perbaikan -->
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between mb-2">
+          <div>
+            <h5 class="card-title mb-1">Riwayat Perbaikan</h5>
+            <p class="text-muted-utama small mb-0">
+              Riwayat barang yang sudah diperbaiki, bisa difilter berdasarkan periode.
+            </p>
+          </div>
+          <span class="stat-icon" style="background-color: var(--warna-aksen-soft); color: var(--warna-aksen);">
+            <i class="bi bi-clock-history"></i>
+          </span>
+        </div>
+
+        <form method="GET" action="/laporan/riwayat-perbaikan" target="_blank" class="mt-3">
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label small mb-1">Dari Tanggal</label>
+              <input type="date" name="dariTanggal" class="form-control form-control-sm" />
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1">Sampai Tanggal</label>
+              <input type="date" name="sampaiTanggal" class="form-control form-control-sm" />
+            </div>
+          </div>
+          <hr class="divider" />
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="bi bi-eye me-1"></i>Lihat & Cetak
+          </button>
+          <small class="text-muted-utama ms-2">Kosongkan tanggal untuk semua periode</small>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card: Laporan Per Ruangan -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between mb-3">
+          <div>
+            <h5 class="card-title mb-1">Laporan Per Ruangan</h5>
+            <p class="text-muted-utama small mb-0">
+              Daftar lengkap barang di setiap ruangan, cocok untuk audit fisik.
+            </p>
+          </div>
+          <span class="stat-icon" style="background-color: var(--warna-info-soft); color: var(--warna-info);">
+            <i class="bi bi-door-closed"></i>
+          </span>
+        </div>
+
+        <% if (daftarRuangan.length === 0) { %>
+          <div class="alert alert-info mb-0">
+            <i class="bi bi-info-circle me-1"></i>
+            Belum ada ruangan. Silakan tambahkan data ruangan terlebih dahulu.
+          </div>
+        <% } else { %>
+          <div class="table-wrapper">
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>Kode</th>
+                    <th>Nama Ruangan</th>
+                    <th>PJ</th>
+                    <th class="text-center">Jumlah Barang</th>
+                    <th class="text-end">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% daftarRuangan.forEach(function(r) { %>
+                    <tr>
+                      <td><code><%= r.kodeRuangan %></code></td>
+                      <td><strong><%= r.namaRuangan %></strong></td>
+                      <td class="small">
+                        <% if (r.pj) { %>
+                          <%= r.pj.nama %>
+                        <% } else { %>
+                          <span class="text-muted-utama">— Belum ditetapkan</span>
+                        <% } %>
+                      </td>
+                      <td class="text-center"><%= r._count.barang %></td>
+                      <td class="text-end">
+                        <a href="/laporan/per-ruangan/<%= r.id %>" target="_blank" class="btn btn-sm btn-outline-primary">
+                          <i class="bi bi-file-earmark-pdf me-1"></i>Cetak PDF
+                        </a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="form-helper-card mt-4">
+  <div class="helper-title">
+    <i class="bi bi-info-circle"></i>
+    Tentang Laporan PDF
+  </div>
+  <ul class="helper-list">
+    <li>Klik <strong>Lihat & Cetak</strong> akan membuka PDF di tab baru. Anda bisa langsung print (Ctrl+P) atau download dari ikon di toolbar PDF.</li>
+    <li><strong>Laporan Per Ruangan</strong> cocok untuk audit fisik tahunan — bawa cetakan ini saat keliling cek barang.</li>
+    <li><strong>Rekap Inventaris</strong> cocok untuk laporan ke kepala sekolah atau dinas pendidikan.</li>
+    <li><strong>Riwayat Perbaikan</strong> berguna untuk evaluasi: barang apa yang paling sering rusak, ruangan mana yang perlu perhatian khusus.</li>
+  </ul>
+</div>

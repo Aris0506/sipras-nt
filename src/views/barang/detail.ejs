@@ -1,1 +1,113 @@
-<h3 class="mb-4">Detail Barang (placeholder)</h3>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1"><%= barang.namaBarang %></h3>
+    <p class="page-subtitle">Kode: <code><%= barang.kodeBarang %></code></p>
+  </div>
+  <a href="/barang" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Kembali
+  </a>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-7">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title mb-3">Informasi Barang</h6>
+        <dl class="row mb-0 small">
+          <dt class="col-sm-4 text-muted-utama">Kategori</dt>
+          <dd class="col-sm-8"><%= barang.kategori %></dd>
+
+          <dt class="col-sm-4 text-muted-utama">Jumlah</dt>
+          <dd class="col-sm-8"><%= barang.jumlah %></dd>
+
+          <dt class="col-sm-4 text-muted-utama">Kondisi</dt>
+          <dd class="col-sm-8">
+            <% if (barang.kondisi === 'baik') { %>
+              <span class="badge varian-sukses">Baik</span>
+            <% } else { %>
+              <span class="badge varian-rusak">Rusak</span>
+            <% } %>
+          </dd>
+
+          <dt class="col-sm-4 text-muted-utama">Ruangan</dt>
+          <dd class="col-sm-8">
+            <code><%= barang.ruangan.kodeRuangan %></code> — <%= barang.ruangan.namaRuangan %>
+          </dd>
+
+          <dt class="col-sm-4 text-muted-utama">Status</dt>
+          <dd class="col-sm-8">
+            <% if (barang.aktif) { %>
+              <span class="badge varian-sukses">Aktif</span>
+            <% } else { %>
+              <span class="badge varian-netral">Nonaktif</span>
+            <% } %>
+          </dd>
+
+          <% if (barang.keterangan) { %>
+            <dt class="col-sm-4 text-muted-utama">Keterangan</dt>
+            <dd class="col-sm-8"><%= barang.keterangan %></dd>
+          <% } %>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-5">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title mb-3">Audit Trail</h6>
+        <dl class="row mb-0 small">
+          <dt class="col-sm-5 text-muted-utama">Diinput oleh</dt>
+          <dd class="col-sm-7"><%= barang.pembuat?.nama || '—' %></dd>
+
+          <dt class="col-sm-5 text-muted-utama">Tanggal input</dt>
+          <dd class="col-sm-7"><%= new Date(barang.createdAt).toLocaleString('id-ID') %></dd>
+
+          <dt class="col-sm-5 text-muted-utama">Terakhir diubah</dt>
+          <dd class="col-sm-7"><%= barang.pemerbarui?.nama || '—' %></dd>
+
+          <dt class="col-sm-5 text-muted-utama">Tanggal ubah</dt>
+          <dd class="col-sm-7"><%= new Date(barang.updatedAt).toLocaleString('id-ID') %></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <% if (barang.logPerbaikan && barang.logPerbaikan.length > 0) { %>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title mb-3">Riwayat Perbaikan</h6>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Tanggal Lapor</th>
+                  <th>Tanggal Selesai</th>
+                  <th>Ditangani Oleh</th>
+                  <th>Catatan</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% barang.logPerbaikan.forEach(function(log) { %>
+                  <tr>
+                    <td><%= new Date(log.tanggalLapor).toLocaleString('id-ID') %></td>
+                    <td>
+                      <% if (log.tanggalSelesai) { %>
+                        <%= new Date(log.tanggalSelesai).toLocaleString('id-ID') %>
+                      <% } else { %>
+                        <span class="badge varian-rusak">Belum selesai</span>
+                      <% } %>
+                    </td>
+                    <td><%= log.penindak?.nama || '—' %></td>
+                    <td><%= log.catatan || '—' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>

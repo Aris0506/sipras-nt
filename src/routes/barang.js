@@ -8,6 +8,10 @@ const { wajibLogin } = require('../middleware/auth');
 
 router.use(wajibLogin);
 
+// API endpoint (harus di atas route dengan :id biar nggak ke-treat sebagai param)
+router.get('/api/kode-otomatis', c.apiKodeOtomatis);
+
+// CRUD
 router.get('/', c.daftarBarang);
 router.get('/baru', c.formTambah);
 router.post('/', c.simpanBarang);

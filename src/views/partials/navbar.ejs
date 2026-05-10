@@ -1,21 +1,32 @@
-<nav class="navbar navbar-dark bg-dark sticky-top">
-  <div class="container-fluid">
+<nav class="sipras-navbar">
+  <div class="d-flex align-items-center">
+    <button id="tombolSidebar" class="btn-toggle-sidebar" type="button" aria-label="Toggle menu">
+      <i class="bi bi-list"></i>
+    </button>
     <a class="navbar-brand" href="/dashboard">
-      <i class="bi bi-boxes"></i> <%= appName %>
+      <img src="/img/logo.png" alt="YASINAT" class="brand-logo-img" />
+      <span><%= appName %></span>
     </a>
+  </div>
+
+  <div class="d-flex align-items-center gap-2">
+    <button id="tombolTema" class="btn-icon" type="button" aria-label="Toggle theme" title="Toggle theme">
+      <i class="bi bi-moon-stars"></i>
+    </button>
+
     <% if (userLogin) { %>
-      <div class="d-flex align-items-center text-white">
-        <span class="me-3 d-none d-md-inline">
-          <i class="bi bi-person-circle"></i>
-          <%= userLogin.nama %>
-          <small class="text-white-50">(<%= userLogin.role === 'waka_sarpras' ? 'Waka Sarpras' : 'PJ Ruangan' %>)</small>
+      <span class="user-info">
+        <span class="user-avatar"><%= userLogin.nama.charAt(0).toUpperCase() %></span>
+        <span class="d-none d-md-inline">
+          <strong><%= userLogin.nama %></strong>
+          <span class="text-muted-utama">· <%= userLogin.role === 'waka_sarpras' ? 'Waka Sarpras' : 'PJ Ruangan' %></span>
         </span>
-        <form action="/logout" method="POST" class="m-0">
-          <button type="submit" class="btn btn-sm btn-outline-light">
-            <i class="bi bi-box-arrow-right"></i> Logout
-          </button>
-        </form>
-      </div>
+      </span>
+      <form action="/logout" method="POST" class="m-0">
+        <button type="submit" class="btn-logout">
+          <i class="bi bi-box-arrow-right"></i><span class="d-none d-md-inline">Logout</span>
+        </button>
+      </form>
     <% } %>
   </div>
 </nav>

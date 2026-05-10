@@ -1,2 +1,184 @@
-<h3 class="mb-4">Halaman placeholder</h3>
-<p class="text-muted">View ini akan diisi pada iterasi berikutnya.</p>
+<div class="page-header">
+  <div>
+    <h3 class="mb-1">
+      <i class="bi bi-tools text-primary me-1"></i>Barang Rusak
+    </h3>
+    <p class="page-subtitle">
+      Daftar barang yang dilaporkan rusak oleh PJ dan menunggu tindak lanjut.
+    </p>
+  </div>
+  <a href="/log-perbaikan/riwayat" class="btn btn-outline-secondary">
+    <i class="bi bi-clock-history me-1"></i>Riwayat Perbaikan
+  </a>
+</div>
+
+<!-- Filter -->
+<form class="card mb-3" method="GET" action="/log-perbaikan">
+  <div class="card-body">
+    <div class="row g-2">
+      <div class="col-md-6">
+        <input type="text" name="q" class="form-control" placeholder="Cari nama atau kode barang..." value="<%= filter.q %>" />
+      </div>
+      <div class="col-md-4">
+        <select name="ruangan" class="form-select">
+          <option value="">Semua Ruangan</option>
+          <% daftarRuanganFilter.forEach(function(r) { %>
+            <option value="<%= r.id %>" <%= filter.ruangan === r.id ? 'selected' : '' %>>
+              <%= r.kodeRuangan %> — <%= r.namaRuangan %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button type="submit" class="btn btn-outline-primary">
+          <i class="bi bi-search me-1"></i>Cari
+        </button>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- List -->
+<% if (daftarLog.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-icon"><i class="bi bi-check-circle"></i></div>
+    <div class="empty-title">Tidak Ada Barang Rusak</div>
+    <p>Semua barang dalam kondisi baik. Bagus!</p>
+  </div>
+<% } else { %>
+  <div class="alert alert-warning mb-3">
+    <i class="bi bi-exclamation-triangle me-1"></i>
+    Terdapat <strong><%= daftarLog.length %> barang rusak</strong> menunggu penanganan.
+    Silakan tindak lanjuti di luar sistem (panggil teknisi/tukang), kemudian klik
+    <strong>"Tandai Sudah Diperbaiki"</strong> setelah selesai.
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Kode Barang</th>
+            <th>Nama Barang</th>
+            <th>Ruangan</th>
+            <th>PJ Ruangan</th>
+            <th>Tanggal Lapor</th>
+            <th>Catatan</th>
+            <th class="text-end">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% daftarLog.forEach(function(log) { %>
+            <tr>
+              <td><code><%= log.barang.kodeBarang %></code></td>
+              <td>
+                <strong><%= log.barang.namaBarang %></strong>
+                <br />
+                <small class="text-muted-utama"><%= log.barang.kategori %></small>
+              </td>
+              <td>
+                <small><%= log.barang.ruangan.kodeRuangan %></small><br>
+                <%= log.barang.ruangan.namaRuangan %>
+              </td>
+              <td class="small">
+                <% if (log.barang.ruangan.pj) { %>
+                  <%= log.barang.ruangan.pj.nama %>
+                <% } else { %>
+                  <span class="text-muted-utama">— Tidak ada PJ</span>
+                <% } %>
+              </td>
+              <td class="small">
+                <%= new Date(log.tanggalLapor).toLocaleString('id-ID', {
+                  day: '2-digit', month: 'short', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit'
+                }) %>
+              </td>
+              <td class="small text-muted-utama">
+                <%= log.catatan || '—' %>
+              </td>
+              <td class="text-end">
+                <button type="button"
+                        class="btn btn-sm btn-primary"
+                        data-tandai-selesai
+                        data-log-id="<%= log.id %>"
+                        data-barang-nama="<%= log.barang.namaBarang %>"
+                        title="Tandai sudah diperbaiki">
+                  <i class="bi bi-check-lg me-1"></i>Sudah Diperbaiki
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<% } %>
+
+<!-- Modal: Form catatan perbaikan -->
+<div id="modalTandaiSelesai" class="confirm-modal" aria-hidden="true">
+  <div class="confirm-modal-backdrop" data-action="cancel"></div>
+  <div class="confirm-modal-dialog" role="dialog" aria-modal="true" style="max-width: 480px;">
+    <div class="confirm-modal-icon varian-sukses">
+      <i class="bi bi-check-circle"></i>
+    </div>
+    <h5 class="confirm-modal-title">Tandai Sudah Diperbaiki</h5>
+    <p class="confirm-modal-pesan">
+      Barang: <strong id="modalNamaBarang"></strong><br />
+      <small>Konfirmasi bahwa barang ini sudah diperbaiki dan siap digunakan kembali.</small>
+    </p>
+
+    <form id="formTandaiSelesai" method="POST" style="text-align: left;">
+      <div class="mb-3">
+        <label class="form-label">Catatan Perbaikan <small class="text-muted-utama">(opsional)</small></label>
+        <textarea name="catatan" class="form-control" rows="3" maxlength="500" placeholder="Contoh: Diganti power supply unit oleh teknisi A. Biaya Rp 350.000."></textarea>
+        <div class="form-text">Catatan akan disimpan di riwayat perbaikan.</div>
+      </div>
+
+      <div class="confirm-modal-actions">
+        <button type="button" class="btn btn-outline-secondary" data-action="cancel">
+          Batal
+        </button>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-lg me-1"></i>Konfirmasi
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const modal = document.getElementById('modalTandaiSelesai');
+    const form = document.getElementById('formTandaiSelesai');
+    const namaBarangSpan = document.getElementById('modalNamaBarang');
+    if (!modal || !form) return;
+
+    function buka(logId, namaBarang) {
+      form.action = '/log-perbaikan/' + logId + '/tandai-selesai';
+      namaBarangSpan.textContent = namaBarang;
+      form.querySelector('textarea').value = '';
+      modal.classList.add('aktif');
+      modal.setAttribute('aria-hidden', 'false');
+      setTimeout(() => form.querySelector('textarea').focus(), 100);
+    }
+
+    function tutup() {
+      modal.classList.remove('aktif');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    document.querySelectorAll('[data-tandai-selesai]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        buka(this.dataset.logId, this.dataset.barangNama);
+      });
+    });
+
+    modal.addEventListener('click', function (e) {
+      if (e.target.dataset.action === 'cancel') tutup();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && modal.classList.contains('aktif')) tutup();
+    });
+  })();
+</script>

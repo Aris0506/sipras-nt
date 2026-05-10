@@ -1,2 +1,154 @@
-<h3 class="mb-4">Form (placeholder)</h3>
-<p class="text-muted">Mode: <%= mode %></p>
+<div class="form-page-wrapper form-lg">
+  <div class="page-header">
+    <div>
+      <h3 class="mb-1"><%= mode === 'create' ? 'Input Barang Baru' : 'Edit Barang' %></h3>
+      <p class="page-subtitle">
+        <%= mode === 'create'
+          ? 'Tambahkan barang baru ke ruangan yang Anda pegang.'
+          : 'Perbarui data barang.' %>
+      </p>
+    </div>
+    <a href="/barang" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Kembali
+    </a>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="<%= mode === 'create' ? '/barang' : '/barang/' + data.id + '?_method=PUT' %>">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nama Barang <span class="text-danger">*</span></label>
+            <input type="text" name="namaBarang" class="form-control" value="<%= data.namaBarang %>" required maxlength="150" autofocus placeholder="Contoh: PC Dell Optiplex 3070" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Kode Barang <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="text" name="kodeBarang" id="kodeBarangInput" class="form-control text-uppercase" value="<%= data.kodeBarang %>" required maxlength="50" readonly />
+              <button type="button" id="tombolEditKode" class="btn btn-outline-secondary" title="Edit kode manual">
+                <i class="bi bi-pencil"></i>
+              </button>
+            </div>
+            <div class="form-text">
+              <i class="bi bi-info-circle"></i>
+              <span id="hintKode">Kode dibuat otomatis berdasarkan ruangan. Klik ikon pensil untuk mengubah manual.</span>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Kategori <span class="text-danger">*</span></label>
+            <input type="text" name="kategori" class="form-control" value="<%= data.kategori %>" required maxlength="50" placeholder="Komputer / Furnitur / Elektronik" list="daftarKategori" />
+            <datalist id="daftarKategori">
+              <option value="Komputer">
+              <option value="Elektronik">
+              <option value="Furnitur">
+              <option value="Alat Tulis">
+              <option value="Alat Kebersihan">
+              <option value="Alat Praktikum">
+              <option value="Lainnya">
+            </datalist>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Jumlah <span class="text-danger">*</span></label>
+            <input type="number" name="jumlah" class="form-control" value="<%= data.jumlah %>" required min="1" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Kondisi <span class="text-danger">*</span></label>
+            <select name="kondisi" class="form-select" required>
+              <option value="baik" <%= data.kondisi === 'baik' ? 'selected' : '' %>>Baik</option>
+              <option value="rusak" <%= data.kondisi === 'rusak' ? 'selected' : '' %>>Rusak</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Ruangan <span class="text-danger">*</span></label>
+            <select name="ruanganId" class="form-select" required>
+              <% daftarRuangan.forEach(function(r) { %>
+                <option value="<%= r.id %>" <%= data.ruanganId === r.id ? 'selected' : '' %>>
+                  <%= r.kodeRuangan %> — <%= r.namaRuangan %>
+                </option>
+              <% }) %>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Keterangan</label>
+            <textarea name="keterangan" class="form-control" rows="2" maxlength="500" placeholder="Opsional. Catatan tambahan, no. seri, tahun pembelian, dll."><%= data.keterangan || '' %></textarea>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i><%= mode === 'create' ? 'Simpan Barang' : 'Simpan Perubahan' %>
+          </button>
+          <a href="/barang" class="btn btn-outline-secondary">Batal</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="form-helper-card">
+    <div class="helper-title">
+      <i class="bi bi-lightbulb"></i>
+      Tips Pengisian Barang
+    </div>
+    <ul class="helper-list">
+      <li>Gunakan <strong>nama barang yang spesifik</strong> agar mudah dicari nanti, contoh: <code>PC Dell Optiplex 3070</code> lebih baik daripada hanya <code>PC</code>.</li>
+      <li><strong>Kode barang otomatis</strong> mengikuti format <code>{KODE_RUANGAN}-{NOMOR_URUT}</code>. Bisa di-override manual jika sudah ada labeling fisik dari sebelumnya.</li>
+      <li>Untuk barang yang punya banyak unit identik (misal: 30 kursi sama), cukup buat <strong>1 entri</strong> dengan jumlah <code>30</code>. Tidak perlu input satu-satu.</li>
+      <li>Manfaatkan kolom <strong>keterangan</strong> untuk no. seri, tahun pembelian, atau catatan lain yang berguna untuk audit fisik.</li>
+      <li>Jika kondisi awal sudah rusak, Anda bisa langsung pilih <strong>Rusak</strong> — sistem otomatis bikin laporan untuk Waka Sarpras.</li>
+    </ul>
+  </div>
+</div>
+
+<% if (mode === 'create') { %>
+<script>
+  (function () {
+    const inputKode = document.getElementById('kodeBarangInput');
+    const selectRuangan = document.querySelector('select[name="ruanganId"]');
+    const tombolEdit = document.getElementById('tombolEditKode');
+    const hintKode = document.getElementById('hintKode');
+
+    if (selectRuangan && inputKode) {
+      selectRuangan.addEventListener('change', async function () {
+        if (!inputKode.readOnly) return;
+        try {
+          const resp = await fetch('/barang/api/kode-otomatis?ruanganId=' + encodeURIComponent(selectRuangan.value));
+          if (!resp.ok) return;
+          const data = await resp.json();
+          if (data.kodeBarang) {
+            inputKode.value = data.kodeBarang;
+          }
+        } catch (e) {
+          console.error('Gagal fetch kode otomatis', e);
+        }
+      });
+    }
+
+    if (tombolEdit && inputKode) {
+      tombolEdit.addEventListener('click', function () {
+        if (inputKode.readOnly) {
+          inputKode.readOnly = false;
+          inputKode.focus();
+          inputKode.select();
+          tombolEdit.innerHTML = '<i class="bi bi-arrow-counterclockwise"></i>';
+          tombolEdit.title = 'Kembalikan ke kode otomatis';
+          hintKode.textContent = 'Mode manual — Anda bebas mengisi kode sesuai keinginan.';
+        } else {
+          inputKode.readOnly = true;
+          tombolEdit.innerHTML = '<i class="bi bi-pencil"></i>';
+          tombolEdit.title = 'Edit kode manual';
+          hintKode.textContent = 'Kode dibuat otomatis berdasarkan ruangan. Klik ikon pensil untuk mengubah manual.';
+          selectRuangan.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+  })();
+</script>
+<% } %>

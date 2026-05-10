@@ -8,8 +8,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // -----------------------------------------------------
@@ -29,20 +30,30 @@ enum Kondisi {
 // Pengguna (Single-Table Inheritance: waka_sarpras + pj)
 // -----------------------------------------------------
 model Pengguna {
-  id            String   @id @default(uuid()) @db.Uuid
-  nama          String   @db.VarChar(100)
-  username      String   @unique @db.VarChar(50)
-  passwordHash  String   @map("password_hash") @db.VarChar(255)
-  role          Role
-  aktif         Boolean  @default(true)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id              String   @id @default(uuid()) @db.Uuid
+  nama            String   @db.VarChar(100)
+  username        String   @unique @db.VarChar(50)
+  passwordHash    String   @map("password_hash") @db.VarChar(255)
+  role            Role
+  aktif           Boolean  @default(true)
+  dibuatOleh      String?  @map("dibuat_oleh") @db.Uuid
+  diperbaruiOleh  String?  @map("diperbarui_oleh") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  // Relasi balik
-  ruanganDipegang     Ruangan[]      @relation("PJRuangan")
-  barangDibuat        Barang[]       @relation("BarangDibuatOleh")
-  barangDiperbarui    Barang[]       @relation("BarangDiperbaruiOleh")
-  logPerbaikanDitangani LogPerbaikan[] @relation("LogDitanganiOleh")
+  // Self-relation untuk audit trail
+  pembuat            Pengguna?  @relation("PenggunaDibuatOleh", fields: [dibuatOleh], references: [id], onDelete: SetNull)
+  penggunaDibuat     Pengguna[] @relation("PenggunaDibuatOleh")
+  pemerbarui         Pengguna?  @relation("PenggunaDiperbaruiOleh", fields: [diperbaruiOleh], references: [id], onDelete: SetNull)
+  penggunaDiperbarui Pengguna[] @relation("PenggunaDiperbaruiOleh")
+
+  // Relasi balik ke entitas lain
+  ruanganDipegang        Ruangan[]      @relation("PJRuangan")
+  ruanganDibuat          Ruangan[]      @relation("RuanganDibuatOleh")
+  ruanganDiperbarui      Ruangan[]      @relation("RuanganDiperbaruiOleh")
+  barangDibuat           Barang[]       @relation("BarangDibuatOleh")
+  barangDiperbarui       Barang[]       @relation("BarangDiperbaruiOleh")
+  logPerbaikanDitangani  LogPerbaikan[] @relation("LogDitanganiOleh")
 
   @@map("pengguna")
 }
@@ -51,16 +62,20 @@ model Pengguna {
 // Ruangan
 // -----------------------------------------------------
 model Ruangan {
-  id            String   @id @default(uuid()) @db.Uuid
-  namaRuangan   String   @map("nama_ruangan") @db.VarChar(100)
-  kodeRuangan   String   @unique @map("kode_ruangan") @db.VarChar(20)
-  pjId          String?  @map("pj_id") @db.Uuid
-  aktif         Boolean  @default(true)
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id              String   @id @default(uuid()) @db.Uuid
+  namaRuangan     String   @map("nama_ruangan") @db.VarChar(100)
+  kodeRuangan     String   @unique @map("kode_ruangan") @db.VarChar(20)
+  pjId            String?  @map("pj_id") @db.Uuid
+  aktif           Boolean  @default(true)
+  dibuatOleh      String?  @map("dibuat_oleh") @db.Uuid
+  diperbaruiOleh  String?  @map("diperbarui_oleh") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
-  pj            Pengguna? @relation("PJRuangan", fields: [pjId], references: [id], onDelete: SetNull)
-  barang        Barang[]
+  pj              Pengguna? @relation("PJRuangan", fields: [pjId], references: [id], onDelete: SetNull)
+  pembuat         Pengguna? @relation("RuanganDibuatOleh", fields: [dibuatOleh], references: [id], onDelete: SetNull)
+  pemerbarui      Pengguna? @relation("RuanganDiperbaruiOleh", fields: [diperbaruiOleh], references: [id], onDelete: SetNull)
+  barang          Barang[]
 
   @@map("ruangan")
 }

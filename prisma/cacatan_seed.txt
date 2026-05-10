@@ -1,0 +1,5 @@
+# WARNING: ini hapus SEMUA data di database (Pengguna, Ruangan, Barang, LogPerbaikan)
+# Pakai cuma kalau bro yakin
+npx prisma migrate reset
+
+npm run seed untuk mengembalikan lagi
