@@ -171,6 +171,7 @@
         }
         tutupModal();
       }
+      
     });
 
     // Tutup modal dengan tombol Esc
@@ -199,5 +200,51 @@
         labelOk: form.dataset.confirmOk,
       });
     });
+
+    // ---------- Toggle Show/Hide Password ----------
+    (function () {
+        document.querySelectorAll('input[type="password"]').forEach(function (input) {
+          // Skip kalau udah di-wrap
+          if (input.parentElement && input.parentElement.classList.contains('input-password-wrapper')) {
+            return;
+          }
+          // Skip kalau di dalam input-group Bootstrap (kayak di form barang)
+          if (input.closest('.input-group')) {
+            return;
+          }
+
+          // Wrap input dengan div
+          const wrapper = document.createElement('div');
+          wrapper.className = 'input-password-wrapper';
+          input.parentNode.insertBefore(wrapper, input);
+          wrapper.appendChild(input);
+
+          // Bikin tombol mata
+          const tombol = document.createElement('button');
+          tombol.type = 'button';
+          tombol.className = 'input-password-toggle';
+          tombol.setAttribute('aria-label', 'Tampilkan password');
+          tombol.innerHTML = '<i class="bi bi-eye"></i>';
+          wrapper.appendChild(tombol);
+
+          // Toggle handler
+          tombol.addEventListener('click', function () {
+            const ikon = tombol.querySelector('i');
+            if (input.type === 'password') {
+              input.type = 'text';
+              input.classList.add('is-password');
+              ikon.className = 'bi bi-eye-slash';
+              tombol.setAttribute('aria-label', 'Sembunyikan password');
+            } else {
+              input.type = 'password';
+              input.classList.remove('is-password');
+              ikon.className = 'bi bi-eye';
+              tombol.setAttribute('aria-label', 'Tampilkan password');
+            }
+          });
+        });
+    })();
   })();
-})();
+ })();
+
+

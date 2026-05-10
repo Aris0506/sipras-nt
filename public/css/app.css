@@ -1182,3 +1182,38 @@ a:hover {
   color: var(--warna-primer);
   font-size: 0.85em;
 }
+
+/* ---------- Input Password Toggle ---------- */
+.input-password-wrapper {
+  position: relative;
+}
+
+.input-password-wrapper .input-password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--teks-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  font-size: 1rem;
+}
+
+.input-password-wrapper .input-password-toggle:hover {
+  color: var(--teks-utama);
+  background-color: var(--bg-hover);
+}
+
+.input-password-wrapper input[type="password"],
+.input-password-wrapper input[type="text"].is-password {
+  padding-right: 44px;
+}
