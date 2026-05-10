@@ -17,10 +17,25 @@ const app = express();
 app.set('trust proxy', 1);
 
 // --- View Engine ---
+// --- View Engine ---
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
+app.set('layout extractScripts', true);
+
+// Skip layout untuk landing page (landing punya HTML lengkap sendiri)
+app.use((req, res, next) => {
+  const renderAsli = res.render.bind(res);
+  res.render = function (view, options, callback) {
+    if (view && view.startsWith('landing/')) {
+      options = options || {};
+      options.layout = false;
+    }
+    return renderAsli(view, options, callback);
+  };
+  next();
+});
 
 // --- Static ---
 app.use(express.static(path.join(__dirname, '..', 'public')));

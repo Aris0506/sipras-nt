@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><%= appName %> — Sistem Inventaris Sarana & Prasarana</title>
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <link href="/css/landing.css" rel="stylesheet" />
+
+  <script>
+    (function () {
+      var t = localStorage.getItem('sipras_tema') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+</head>
+<body class="landing-body">
+
+  <!-- Floating decorative shapes (rainbow dari logo SMK) -->
+  <div class="floating-shapes" aria-hidden="true">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+    <div class="shape shape-6"></div>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="landing-nav">
+    <div class="container-landing">
+      <a href="#" class="landing-brand">
+        <img src="/img/logo.png" alt="YASINAT" />
+        <span><%= appName %></span>
+      </a>
+      <div class="landing-nav-actions">
+        <button id="tombolTema" class="btn-icon" type="button" aria-label="Toggle theme">
+          <i class="bi bi-moon-stars"></i>
+        </button>
+        <a href="/login" class="btn-masuk">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span>Masuk</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="container-landing">
+      <div class="hero-grid">
+        <div class="hero-content reveal-on-scroll">
+          <div class="hero-badge">
+            <span class="hero-badge-dot"></span>
+            <span>Sistem Inventaris Modern</span>
+          </div>
+          <h1 class="hero-title">
+            Kelola Inventaris Sekolah,
+            <span class="hero-title-accent">Lebih Cepat &amp; Rapi.</span>
+          </h1>
+          <p class="hero-desc">
+            <strong>SIPRAS-NT</strong> adalah sistem informasi inventaris sarana &amp; prasarana digital
+            untuk SMK Nahdlatuth Thalabah. Bantu Waka Sarpras &amp; PJ Ruangan
+            dalam pencatatan barang, pelaporan kerusakan, dan cetak laporan
+            — semua dalam satu tempat.
+          </p>
+          <div class="hero-cta">
+            <a href="/login" class="btn-cta-primary">
+              <span>Mulai Sekarang</span>
+              <i class="bi bi-arrow-right"></i>
+            </a>
+            <a href="#fitur" class="btn-cta-secondary">
+              <i class="bi bi-info-circle"></i>
+              <span>Pelajari Fitur</span>
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-value" data-counter="30">0</div>
+              <div class="hero-stat-label">PJ Ruangan</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-value">100%</div>
+              <div class="hero-stat-label">Digital</div>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat">
+              <div class="hero-stat-value">24/7</div>
+              <div class="hero-stat-label">Akses</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal-on-scroll">
+          <div class="hero-logo-stack">
+            <div class="logo-yasinat-wrapper float-anim">
+              <img src="/img/logo.png" alt="YASINAT" class="logo-yasinat" />
+              <div class="logo-glow"></div>
+            </div>
+            <div class="logo-decoration">
+              <div class="deco-square deco-sq-1"></div>
+              <div class="deco-square deco-sq-2"></div>
+              <div class="deco-square deco-sq-3"></div>
+              <div class="deco-square deco-sq-4"></div>
+              <div class="deco-square deco-sq-5"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IDENTITAS SECTION -->
+  <section class="identitas reveal-on-scroll">
+    <div class="container-landing">
+      <div class="identitas-card">
+        <div class="identitas-logo">
+          <img src="/img/SMK.png" alt="SMK BISA HEBAT" />
+        </div>
+        <div class="identitas-content">
+          <p class="identitas-tagline">SEMANGAT KAMI</p>
+          <h2 class="identitas-title">
+            Siap Kerja · Santun · Mandiri · Kreatif
+          </h2>
+          <p class="identitas-desc">
+            Dengan sistem inventaris yang terorganisir, kami memastikan setiap fasilitas
+            sekolah siap mendukung pembelajaran TKJ &amp; Multimedia
+            yang berkualitas — sejalan dengan visi mencetak lulusan yang siap kerja.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FITUR SECTION -->
+  <section class="fitur" id="fitur">
+    <div class="container-landing">
+      <div class="section-header reveal-on-scroll">
+        <p class="section-tagline">FITUR UNGGULAN</p>
+        <h2 class="section-title">Semua yang Anda Butuhkan, dalam Satu Sistem</h2>
+        <p class="section-desc">
+          Dirancang khusus untuk kebutuhan SMK Nahdlatuth Thalabah,
+          dengan workflow yang sesuai pembagian tugas Waka Sarpras &amp; PJ Ruangan.
+        </p>
+      </div>
+
+      <div class="fitur-grid">
+        <div class="fitur-card reveal-on-scroll" data-delay="0">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #16A34A, #22C55E);">
+            <i class="bi bi-boxes"></i>
+          </div>
+          <h3>Pencatatan Otomatis</h3>
+          <p>Kode barang dibuat otomatis berdasarkan ruangan. PJ tinggal isi nama &amp; kategori — tidak perlu pusing soal penomoran.</p>
+        </div>
+
+        <div class="fitur-card reveal-on-scroll" data-delay="100">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #EA580C, #F59E0B);">
+            <i class="bi bi-tools"></i>
+          </div>
+          <h3>Lapor Kerusakan</h3>
+          <p>PJ Ruangan bisa melaporkan barang rusak dalam 1 klik. Waka Sarpras langsung dapat notifikasi untuk tindak lanjut.</p>
+        </div>
+
+        <div class="fitur-card reveal-on-scroll" data-delay="200">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #2563EB, #60A5FA);">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </div>
+          <h3>Laporan PDF Profesional</h3>
+          <p>Cetak laporan per ruangan, rekap inventaris, atau riwayat perbaikan dengan kop surat resmi sekolah — siap untuk audit.</p>
+        </div>
+
+        <div class="fitur-card reveal-on-scroll" data-delay="300">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #9333EA, #C084FC);">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h3>Audit Trail Lengkap</h3>
+          <p>Setiap perubahan tercatat: siapa input, siapa edit, kapan terjadi. Transparansi penuh untuk akuntabilitas.</p>
+        </div>
+
+        <div class="fitur-card reveal-on-scroll" data-delay="400">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #DB2777, #F472B6);">
+            <i class="bi bi-people"></i>
+          </div>
+          <h3>Multi-User &amp; Multi-Role</h3>
+          <p>Akses berbeda untuk Waka Sarpras (full kontrol) dan PJ Ruangan (kelola ruangan sendiri). Aman &amp; terkelola.</p>
+        </div>
+
+        <div class="fitur-card reveal-on-scroll" data-delay="500">
+          <div class="fitur-icon" style="background: linear-gradient(135deg, #0891B2, #22D3EE);">
+            <i class="bi bi-phone"></i>
+          </div>
+          <h3>Akses Dimana Saja</h3>
+          <p>Berbasis web — bisa dibuka dari laptop, HP, atau tablet. Cek inventaris sambil keliling ruangan? Bisa.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLE SECTION -->
+  <section class="role">
+    <div class="container-landing">
+      <div class="section-header reveal-on-scroll">
+        <p class="section-tagline">DUA PERAN, SATU TUJUAN</p>
+        <h2 class="section-title">Untuk Siapa SIPRAS-NT?</h2>
+      </div>
+
+      <div class="role-grid">
+        <div class="role-card role-waka reveal-on-scroll">
+          <div class="role-icon">
+            <i class="bi bi-shield-fill-check"></i>
+          </div>
+          <p class="role-tag">PERAN A</p>
+          <h3>Waka Sarpras</h3>
+          <p class="role-desc">Mengelola, memantau, dan mengambil tindakan strategis terhadap inventaris seluruh sekolah.</p>
+          <ul class="role-list">
+            <li><i class="bi bi-check-circle-fill"></i> Kelola akun PJ Ruangan</li>
+            <li><i class="bi bi-check-circle-fill"></i> Atur data ruangan &amp; tetapkan PJ</li>
+            <li><i class="bi bi-check-circle-fill"></i> Pantau seluruh barang sekolah</li>
+            <li><i class="bi bi-check-circle-fill"></i> Tindak lanjut barang rusak</li>
+            <li><i class="bi bi-check-circle-fill"></i> Cetak laporan PDF resmi</li>
+          </ul>
+        </div>
+
+        <div class="role-card role-pj reveal-on-scroll">
+          <div class="role-icon">
+            <i class="bi bi-person-fill-gear"></i>
+          </div>
+          <p class="role-tag">PERAN B</p>
+          <h3>PJ Ruangan</h3>
+          <p class="role-desc">Penanggung jawab di lapangan yang langsung mengelola barang di ruangan masing-masing.</p>
+          <ul class="role-list">
+            <li><i class="bi bi-check-circle-fill"></i> Input barang baru ke ruangan</li>
+            <li><i class="bi bi-check-circle-fill"></i> Edit detail &amp; jumlah barang</li>
+            <li><i class="bi bi-check-circle-fill"></i> Lapor kerusakan ke Waka</li>
+            <li><i class="bi bi-check-circle-fill"></i> Lihat riwayat perbaikan</li>
+            <li><i class="bi bi-check-circle-fill"></i> Audit fisik mudah dengan kode</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final">
+    <div class="container-landing">
+      <div class="cta-card reveal-on-scroll">
+        <div class="cta-blob cta-blob-1"></div>
+        <div class="cta-blob cta-blob-2"></div>
+        <div class="cta-content">
+          <h2>Siap Mengelola Inventaris dengan Lebih Baik?</h2>
+          <p>Login dengan akun Anda dan mulai kelola inventaris sekarang juga.</p>
+          <a href="/login" class="btn-cta-primary btn-cta-lg">
+            <span>Masuk ke SIPRAS-NT</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="container-landing">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="/img/logo.png" alt="YASINAT" />
+          <div>
+            <p class="footer-yayasan">Yayasan Islam Nahdlatuth Thalabah (YASINAT)</p>
+            <p class="footer-school">SMK Nahdlatuth Thalabah</p>
+            <p class="footer-jurusan">Teknik Komputer Jaringan &amp; Multimedia</p>
+          </div>
+        </div>
+
+        <div class="footer-info">
+          <p class="footer-info-title">Alamat</p>
+          <p>Jl. K.H. Imam Bukhori, Desa Kesilir<br>Kec. Wuluhan, Kab. Jember<br>Jawa Timur — 68162</p>
+        </div>
+
+        <div class="footer-info">
+          <p class="footer-info-title">Kontak</p>
+          <p>(0336) 881 400<br>0811 3787 400<br>smkyasinat@yahoo.co.id<br>smkyasinat.sch.id</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-capstone">
+          Capstone Project <i class="bi bi-suit-heart-fill"></i>
+          <strong>Universitas Terbuka</strong> &times; <strong>SMK Nahdlatuth Thalabah</strong>
+        </p>
+        <p class="footer-author">
+          Dikembangkan oleh <strong>Kelompok B</strong> · Program Studi · Sistem Informasi · <%= new Date().getFullYear() %>
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/landing.js"></script>
+</body>
+</html>
