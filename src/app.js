@@ -13,6 +13,9 @@ const { attachUser } = require('./middleware/auth');
 
 const app = express();
 
+// Trust Railway reverse proxy (penting untuk session secure cookie di production)
+app.set('trust proxy', 1);
+
 // --- View Engine ---
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
