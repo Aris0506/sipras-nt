@@ -1,13 +1,37 @@
-@startuml SIPRAS-NT_Flowchart_InputBarang
+@startuml Flowchart_InputPJ
+title Flowchart Input Barang oleh PJ Ruangan
+
 start
+
 :PJ login ke sistem;
+
 if (Login valid?) then (ya)
   :Masuk ke dashboard PJ;
   :PJ pilih menu "Input Barang";
-  :Sistem tampilkan form input barang;
+
+  if (Periode pengisian aktif?) then (ya, dalam periode)
+    :Sistem tampilkan form input barang
+    (aktif normal);
+  else (tidak, di luar periode)
+    if (Ruangan punya unlock khusus dari Waka?) then (ya)
+      :Sistem tampilkan form
+      + banner kuning "Akses khusus
+      berlaku sampai 23:59";
+    else (tidak)
+      :Sistem tampilkan pesan
+      "Periode pengisian telah berakhir.
+      Hubungi Waka Sarpras";
+      :Form input DI-LOCK
+      (tombol disabled);
+      stop
+    endif
+  endif
+
   :PJ isi data barang
   (kode, nama, kategori, jumlah, kondisi);
+
   :PJ submit form;
+
   if (Validasi data lengkap?) then (ya)
     :Sistem simpan ke tabel Barang;
     :Sistem catat audit trail
@@ -18,9 +42,12 @@ if (Login valid?) then (ya)
     :Tampilkan pesan error;
     :Kembali ke form input;
   endif
+
 else (tidak)
   :Tampilkan pesan error login;
   stop
 endif
+
 stop
+
 @enduml
