@@ -7,7 +7,7 @@ skinparam classAttributeIconSize 0
 ENTITY(Pengguna) {
   + id : UUID «PK»
   --
-  nama : VARCHAR(100)  
+  nama : VARCHAR(100)
   username : VARCHAR(50) «UNIQUE»
   password_hash : VARCHAR(255)
   role : ENUM('waka_sarpras','pj')
@@ -58,6 +58,39 @@ ENTITY(LogPerbaikan) {
   tanggal_selesai : TIMESTAMP
 }
 
+ENTITY(Settings) {
+  + id : UUID «PK»
+  --
+  tanggal_mulai_periode : INT
+  durasi_periode_hari : INT
+  diperbarui_oleh : UUID «FK»
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+ENTITY(PeriodePengisian) {
+  + id : UUID «PK»
+  --
+  tanggal_mulai : TIMESTAMP
+  tanggal_selesai : TIMESTAMP
+  bulan : INT
+  tahun : INT
+  jenis : VARCHAR(20)
+  catatan : TEXT
+  dibuat_oleh : UUID «FK»
+  created_at : TIMESTAMP
+}
+
+ENTITY(UnlockKhusus) {
+  + id : UUID «PK»
+  --
+  ruangan_id : UUID «FK»
+  berlaku_sampai : TIMESTAMP
+  alasan : TEXT
+  diberikan_oleh : UUID «FK»
+  created_at : TIMESTAMP
+}
+
 Pengguna ||--o{ Ruangan : "menjadi PJ"
 Ruangan ||--o{ Barang : "memiliki"
 Pengguna ||--o{ Barang : "input/edit"
@@ -65,6 +98,11 @@ Barang ||--o{ LogPerbaikan : "memiliki riwayat"
 Pengguna ||--o{ LogPerbaikan : "menangani"
 Pengguna ||--o{ Pengguna : "audit (dibuat/diperbarui)"
 Pengguna ||--o{ Ruangan : "audit (dibuat/diperbarui)"
+
+Pengguna ||--o{ Settings : "atur"
+Pengguna ||--o{ PeriodePengisian : "buat"
+Pengguna ||--o{ UnlockKhusus : "berikan"
+Ruangan  ||--o{ UnlockKhusus : "dapat unlock"
 
 note right of Pengguna
   Single-table inheritance:
@@ -92,6 +130,27 @@ note right of LogPerbaikan
   rusak oleh Waka Sarpras.
   Tabel ini sendiri sudah
   jadi audit log barang rusak.
+end note
+
+note right of Settings
+  Config global (1 baris).
+  Waka atur tanggal mulai &
+  durasi periode pengisian
+  inventaris bulanan.
+end note
+
+note right of PeriodePengisian
+  Catatan tiap periode.
+  jenis: 'reguler' (auto tiap
+  bulan) atau 'khusus' (Waka
+  bikin manual).
+end note
+
+note right of UnlockKhusus
+  Override Waka: buka kunci
+  ruangan tertentu di luar
+  periode untuk kasus darurat.
+  Auto-expire tengah malam.
 end note
 
 @enduml
