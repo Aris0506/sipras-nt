@@ -55,6 +55,10 @@ model Pengguna {
   barangDiperbarui       Barang[]       @relation("BarangDiperbaruiOleh")
   logPerbaikanDitangani  LogPerbaikan[] @relation("LogDitanganiOleh")
 
+  settingsDiperbarui Settings[]         @relation("SettingsPembaru")
+  periodeDibuat      PeriodePengisian[] @relation("PeriodePembuat")
+  unlockDiberikan    UnlockKhusus[]     @relation("UnlockPemberi")
+
   @@map("pengguna")
 }
 
@@ -76,6 +80,7 @@ model Ruangan {
   pembuat         Pengguna? @relation("RuanganDibuatOleh", fields: [dibuatOleh], references: [id], onDelete: SetNull)
   pemerbarui      Pengguna? @relation("RuanganDiperbaruiOleh", fields: [diperbaruiOleh], references: [id], onDelete: SetNull)
   barang          Barang[]
+  unlocks UnlockKhusus[]
 
   @@map("ruangan")
 }
@@ -137,4 +142,53 @@ model Session {
 
   @@index([expire], map: "IDX_session_expire")
   @@map("session")
+}
+
+
+model Settings {
+  id                      String   @id @default(uuid()) @db.Uuid
+  tanggalMulaiPeriode     Int      @default(1) @map("tanggal_mulai_periode")
+  durasiPeriodeHari       Int      @default(7) @map("durasi_periode_hari")
+  diperbaruiOleh          String?  @map("diperbarui_oleh") @db.Uuid
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  pembaru Pengguna? @relation("SettingsPembaru", fields: [diperbaruiOleh], references: [id], onDelete: SetNull)
+
+  @@map("settings")
+}
+
+
+model PeriodePengisian {
+  id              String   @id @default(uuid()) @db.Uuid
+  tanggalMulai    DateTime @map("tanggal_mulai")
+  tanggalSelesai  DateTime @map("tanggal_selesai")
+  bulan           Int
+  tahun           Int
+  jenis           String   @default("reguler") @db.VarChar(20)
+  catatan         String?  @db.Text
+  dibuatOleh      String   @map("dibuat_oleh") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  pembuat Pengguna @relation("PeriodePembuat", fields: [dibuatOleh], references: [id], onDelete: Restrict)
+
+  @@index([bulan, tahun])
+  @@map("periode_pengisian")
+}
+
+
+
+model UnlockKhusus {
+  id              String   @id @default(uuid()) @db.Uuid
+  ruanganId       String   @map("ruangan_id") @db.Uuid
+  berlakuSampai   DateTime @map("berlaku_sampai")
+  alasan          String   @db.Text
+  diberikanOleh   String   @map("diberikan_oleh") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  ruangan Ruangan  @relation(fields: [ruanganId], references: [id], onDelete: Cascade)
+  pemberi Pengguna @relation("UnlockPemberi", fields: [diberikanOleh], references: [id], onDelete: Restrict)
+
+  @@index([ruanganId])
+  @@map("unlock_khusus")
 }
