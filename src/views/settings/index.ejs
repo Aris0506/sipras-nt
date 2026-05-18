@@ -1,0 +1,79 @@
+<div class="form-page-wrapper">
+  <div class="page-header">
+    <div>
+      <h3 class="mb-1">
+        <i class="bi bi-gear text-primary me-1"></i>Pengaturan Sistem
+      </h3>
+      <p class="page-subtitle">
+        Atur jadwal periode pengisian inventaris bulanan untuk PJ Ruangan.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <form method="POST" action="/settings">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">
+              Tanggal Mulai Periode <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              name="tanggalMulaiPeriode"
+              class="form-control"
+              value="<%= settings.tanggalMulaiPeriode %>"
+              min="1"
+              max="28"
+              required
+            />
+            <div class="form-text">
+              Tanggal awal periode tiap bulan (1-28).
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">
+              Durasi Periode (hari) <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              name="durasiPeriodeHari"
+              class="form-control"
+              value="<%= settings.durasiPeriodeHari %>"
+              min="1"
+              max="28"
+              required
+            />
+            <div class="form-text">
+              Berapa hari periode aktif setelah tanggal mulai.
+            </div>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg me-1"></i>Simpan Pengaturan
+          </button>
+          <a href="/dashboard" class="btn btn-outline-secondary">Kembali</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="form-helper-card">
+    <div class="helper-title">
+      <i class="bi bi-info-circle"></i>
+      Tentang Periode Pengisian
+    </div>
+    <ul class="helper-list">
+      <li>Sistem otomatis membuat periode baru tiap awal bulan berdasarkan tanggal mulai & durasi yang Anda atur.</li>
+      <li>Contoh: Tanggal mulai <code>1</code>, durasi <code>7</code> = PJ bisa input/edit barang setiap tanggal <strong>1-7 tiap bulan</strong>.</li>
+      <li>Di luar periode, form input/edit barang akan <strong>otomatis di-lock</strong> untuk PJ.</li>
+      <li>Untuk kasus darurat, Anda dapat memberikan <strong>unlock khusus</strong> per ruangan dari halaman Daftar Ruangan.</li>
+      <li>Maksimal tanggal mulai <strong>28</strong> agar tidak bermasalah di bulan Februari.</li>
+    </ul>
+  </div>
+</div>

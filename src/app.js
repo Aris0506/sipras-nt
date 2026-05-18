@@ -72,6 +72,7 @@ app.use('/ruangan', require('./routes/ruangan'));
 app.use('/barang', require('./routes/barang'));
 app.use('/log-perbaikan', require('./routes/logPerbaikan'));
 app.use('/laporan', require('./routes/laporan'));
+app.use('/settings', require('./routes/settings'));
 
 // --- 404 ---
 app.use((req, res) => {
