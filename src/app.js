@@ -74,6 +74,10 @@ app.use('/log-perbaikan', require('./routes/logPerbaikan'));
 app.use('/laporan', require('./routes/laporan'));
 app.use('/settings', require('./routes/settings'));
 
+// Scheduler auto-create periode pengisian
+const { initScheduler } = require('./utils/scheduler');
+initScheduler();
+
 // --- 404 ---
 app.use((req, res) => {
   res.status(404).render('error', {
