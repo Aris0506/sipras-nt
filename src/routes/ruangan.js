@@ -14,6 +14,8 @@ router.post('/', c.simpanRuangan);
 router.get('/:id/edit', c.formEdit);
 router.put('/:id', c.perbaruiRuangan);
 router.post('/:id/tetapkan-pj', c.tetapkanPJ);
+router.post('/:id/unlock', c.unlockRuangan);
+router.post('/:id/cancel-unlock', c.cancelUnlock);
 router.post('/:id/nonaktifkan', c.nonaktifkan);
 
 module.exports = router;

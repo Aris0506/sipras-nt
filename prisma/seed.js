@@ -49,6 +49,17 @@ const DAFTAR_PJ = [
 async function main() {
   console.log('🌱 Mulai seeding...\n');
 
+  // --- 0. Bersihkan data lama (urutan penting karena ada FK) ---
+  console.log('🧹 Membersihkan data lama...');
+  await prisma.unlockKhusus.deleteMany({});
+  await prisma.periodePengisian.deleteMany({});
+  await prisma.settings.deleteMany({});
+  await prisma.logPerbaikan.deleteMany({});
+  await prisma.barang.deleteMany({});
+  await prisma.ruangan.deleteMany({});
+  await prisma.pengguna.deleteMany({});
+  console.log('✅ Data lama dibersihkan.\n');
+
   const passwordHash = await bcrypt.hash(PASSWORD_DEFAULT, 10);
 
   // --- 1. Akun Waka Sarpras ---
@@ -93,6 +104,17 @@ async function main() {
   }
 
   console.log(`✅ PJ Ruangan  : ${countBaru} akun baru, ${countSkip} di-skip (sudah ada)`);
+
+  // --- 3. Settings default (periode pengisian) ---
+  await prisma.settings.create({
+    data: {
+      tanggalMulaiPeriode: 1,
+      durasiPeriodeHari: 7,
+      diperbaruiOleh: waka.id,
+    },
+  });
+  console.log(`✅ Settings    : Periode default tgl 1, durasi 7 hari`);
+
   console.log(`\n📌 Password awal SEMUA akun: ${PASSWORD_DEFAULT}`);
   console.log(`   Wajib diganti oleh masing-masing user setelah login pertama.`);
   console.log(`\n🌱 Seeding selesai.\n`);

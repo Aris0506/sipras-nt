@@ -79,7 +79,30 @@
                 <div class="d-inline-flex gap-1">
                   <a href="/ruangan/<%= r.id %>/edit" class="btn btn-sm btn-outline-secondary" title="Edit">
                     <i class="bi bi-pencil"></i>
-                  </a>           
+                  </a>
+                  <% if (r.aktif) { %>
+                    <% if (r.unlocks && r.unlocks.length > 0) { %>
+                      <form action="/ruangan/<%= r.id %>/cancel-unlock" method="POST" class="m-0"
+                            data-confirm="Tutup akses khusus untuk ruangan <%= r.namaRuangan %>?"
+                            data-confirm-title="Tutup Akses Khusus"
+                            data-confirm-varian="bahaya"
+                            data-confirm-ok="Ya, Tutup">
+                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Tutup Akses Khusus (aktif)">
+                          <i class="bi bi-lock-fill"></i>
+                        </button>
+                      </form>
+                    <% } else { %>
+                      <button type="button"
+                              class="btn btn-sm btn-outline-secondary"
+                              title="Buka Akses Khusus"
+                              data-bs-toggle="modal"
+                              data-bs-target="#modalUnlock"
+                              data-ruangan-id="<%= r.id %>"
+                              data-ruangan-nama="<%= r.namaRuangan %>">
+                        <i class="bi bi-unlock"></i>
+                      </button>
+                    <% } %>
+                  <% } %>
                   <form action="/ruangan/<%= r.id %>/nonaktifkan" method="POST" class="m-0"
                         data-confirm="<%= r.aktif ? 'Nonaktifkan' : 'Aktifkan kembali' %> ruangan <%= r.namaRuangan %>?"
                         data-confirm-title="<%= r.aktif ? 'Nonaktifkan Ruangan' : 'Aktifkan Ruangan' %>"
@@ -98,3 +121,64 @@
     </div>
   </div>
 <% } %>
+
+<!-- Modal: Buka Akses Khusus -->
+<div class="modal fade" id="modalUnlock" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="formUnlock" method="POST" action="">
+        <div class="modal-header">
+          <h5 class="modal-title">
+            <i class="bi bi-unlock me-1"></i>Buka Akses Khusus
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted-utama small mb-3">
+            Buka akses input/edit barang untuk ruangan
+            <strong id="namaRuanganUnlock"></strong>
+            di luar periode pengisian. Akses otomatis berakhir
+            <strong>pukul 23:59 hari ini</strong>.
+          </p>
+          <div class="mb-3">
+            <label class="form-label">
+              Alasan Buka Akses <span class="text-danger">*</span>
+            </label>
+            <textarea name="alasan" class="form-control" rows="3"
+                      placeholder="Contoh: AC baru masuk hari ini, perlu segera diinput sebelum periode bulan depan."
+                      minlength="5"
+                      required></textarea>
+            <div class="form-text">Minimal 5 karakter. Akan tercatat di audit trail.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            Batal
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-unlock me-1"></i>Buka Akses
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Set action form & nama ruangan saat modal kebuka
+  (function () {
+    const modal = document.getElementById('modalUnlock');
+    if (!modal) return;
+
+    modal.addEventListener('show.bs.modal', function (event) {
+      const tombol = event.relatedTarget;
+      const ruanganId = tombol.getAttribute('data-ruangan-id');
+      const ruanganNama = tombol.getAttribute('data-ruangan-nama');
+
+      const form = document.getElementById('formUnlock');
+      form.action = '/ruangan/' + ruanganId + '/unlock';
+
+      document.getElementById('namaRuanganUnlock').textContent = ruanganNama;
+    });
+  })();
+</script>

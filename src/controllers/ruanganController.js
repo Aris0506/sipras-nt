@@ -20,6 +20,7 @@ exports.daftarRuangan = async (req, res, next) => {
     if (status === 'aktif') where.aktif = true;
     if (status === 'nonaktif') where.aktif = false;
 
+    const sekarang = new Date();
     const daftarRuangan = await prisma.ruangan.findMany({
       where,
       select: {
@@ -30,6 +31,11 @@ exports.daftarRuangan = async (req, res, next) => {
         pj: { select: { id: true, nama: true, aktif: true } },
         _count: {
           select: { barang: { where: { aktif: true } } },
+        },
+        unlocks: {
+          where: { berlakuSampai: { gte: sekarang } },
+          select: { berlakuSampai: true, alasan: true },
+          take: 1,
         },
       },
       orderBy: [{ aktif: 'desc' }, { namaRuangan: 'asc' }],
@@ -315,6 +321,90 @@ exports.nonaktifkan = async (req, res, next) => {
     req.flash(
       'sukses',
       `Ruangan "${ruangan.namaRuangan}" ${statusBaru ? 'diaktifkan kembali' : 'dinonaktifkan'}.`
+    );
+    res.redirect('/ruangan');
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// ---------- POST /ruangan/:id/unlock ----------
+// Quick action: Bu Widya buka akses ruangan tertentu di luar periode
+exports.unlockRuangan = async (req, res, next) => {
+  try {
+    const ruangan = await prisma.ruangan.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!ruangan) {
+      req.flash('error', 'Ruangan tidak ditemukan.');
+      return res.redirect('/ruangan');
+    }
+
+    const alasan = String(req.body.alasan || '').trim();
+
+    if (!alasan || alasan.length < 5) {
+      req.flash('error', 'Alasan unlock wajib diisi (minimal 5 karakter).');
+      return res.redirect('/ruangan');
+    }
+
+    // Default: berlaku sampai jam 23:59:59 hari ini (WIB)
+    const sekarang = new Date();
+    const tahun = sekarang.getFullYear();
+    const bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
+    const tanggal = String(sekarang.getDate()).padStart(2, '0');
+    const berlakuSampai = new Date(`${tahun}-${bulan}-${tanggal}T23:59:59+07:00`);
+
+    await prisma.unlockKhusus.create({
+      data: {
+        ruanganId: ruangan.id,
+        berlakuSampai,
+        alasan,
+        diberikanOleh: req.userLogin.id,
+      },
+    });
+
+    req.flash(
+      'sukses',
+      `Ruangan "${ruangan.namaRuangan}" diberi akses khusus sampai pukul 23:59 hari ini.`
+    );
+    res.redirect('/ruangan');
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// ---------- POST /ruangan/:id/cancel-unlock ----------
+// Bu Widya batalkan unlock yang masih aktif (hapus row dari unlock_khusus)
+exports.cancelUnlock = async (req, res, next) => {
+  try {
+    const ruangan = await prisma.ruangan.findUnique({
+      where: { id: req.params.id },
+    });
+    if (!ruangan) {
+      req.flash('error', 'Ruangan tidak ditemukan.');
+      return res.redirect('/ruangan');
+    }
+
+    const sekarang = new Date();
+
+    // Hapus semua unlock yang masih aktif untuk ruangan ini
+    const dihapus = await prisma.unlockKhusus.deleteMany({
+      where: {
+        ruanganId: ruangan.id,
+        berlakuSampai: { gte: sekarang },
+      },
+    });
+
+    if (dihapus.count === 0) {
+      req.flash('error', `Tidak ada unlock aktif untuk ruangan "${ruangan.namaRuangan}".`);
+      return res.redirect('/ruangan');
+    }
+
+    req.flash(
+      'sukses',
+      `Akses khusus untuk ruangan "${ruangan.namaRuangan}" berhasil ditutup.`
     );
     res.redirect('/ruangan');
   } catch (err) {
