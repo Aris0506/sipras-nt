@@ -5,13 +5,44 @@
       <%= userLogin.role === 'waka_sarpras'
             ? 'Pantau inventaris sekolah dan tindak lanjut barang rusak.'
             : 'Kelola barang di ruangan yang Anda pegang.' %>
+            
     </p>
   </div>
 </div>
-
 <% if (userLogin && userLogin.role === 'waka_sarpras') { %>
+  <% if (periode) { %>
+    <%
+      const fmt = (d) => new Date(d).toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      });
+      const sekarang = new Date();
+      const dalamPeriode = sekarang >= new Date(periode.tanggalMulai) && sekarang <= new Date(periode.tanggalSelesai);
+    %>
+    <div class="alert <%= dalamPeriode ? 'alert-success' : 'alert-secondary' %> d-flex align-items-center mb-3">
+      <i class="bi <%= dalamPeriode ? 'bi-clock-fill' : 'bi-clock-history' %> me-2"></i>
+      <div class="small">
+        <strong>Periode Pengisian:</strong>
+        <%= fmt(periode.tanggalMulai) %> s/d <%= fmt(periode.tanggalSelesai) %>
+        <span class="ms-2">
+          <%= dalamPeriode ? '· Sedang berlangsung' : '· Sudah selesai' %>
+        </span>
+      </div>
+    </div>
+  <% } %>
 
   <div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+      <div class="stat-card varian-aksen">
+        <div class="stat-header">
+          <span class="stat-label">PJ Belum Mengisi</span>
+          <span class="stat-icon"><i class="bi bi-clipboard-x"></i></span>
+        </div>
+        <div class="stat-value"><%= statistik.totalBelumMengisi %></div>
+        <div class="stat-meta">
+          <% if (statistik.totalBelumMengisi > 0) { %>Periode bulan ini<% } %>
+        </div>
+      </div>
+    </div>
     <div class="col-sm-6 col-lg-3">
       <div class="stat-card varian-primer">
         <div class="stat-header">
