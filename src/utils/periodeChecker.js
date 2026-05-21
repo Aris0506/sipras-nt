@@ -32,15 +32,30 @@ async function hitungPeriodeBulanIni() {
   const tahun = sekarangWIB.getFullYear();
   const bulan = sekarangWIB.getMonth(); // 0-11
 
-  // Bikin tanggal mulai & selesai di timezone WIB
-  // Trik: bikin string ISO + offset WIB (+07:00), JS auto-parse ke UTC
+  const tanggalMulaiPeriode = Number(settings.tanggalMulaiPeriode);
+  const durasiPeriodeHari = Number(settings.durasiPeriodeHari);
+
+  // Validasi sederhana agar setting tidak bikin tanggal rusak
+  if (!Number.isInteger(tanggalMulaiPeriode) || tanggalMulaiPeriode < 1 || tanggalMulaiPeriode > 31) {
+    throw new Error('Setting tanggal mulai periode tidak valid.');
+  }
+
+  if (!Number.isInteger(durasiPeriodeHari) || durasiPeriodeHari < 1 || durasiPeriodeHari > 31) {
+    throw new Error('Setting durasi periode tidak valid.');
+  }
+
+  // Bikin tanggal mulai di WIB
   const padDua = (n) => String(n).padStart(2, '0');
   const bulanStr = padDua(bulan + 1);
-  const mulaiStr = padDua(settings.tanggalMulaiPeriode);
-  const selesaiStr = padDua(settings.tanggalMulaiPeriode + settings.durasiPeriodeHari - 1);
+  const mulaiStr = padDua(tanggalMulaiPeriode);
 
   const tanggalMulai = new Date(`${tahun}-${bulanStr}-${mulaiStr}T00:00:00+07:00`);
-  const tanggalSelesai = new Date(`${tahun}-${bulanStr}-${selesaiStr}T23:59:59+07:00`);
+
+  // Tanggal selesai dihitung pakai Date arithmetic, bukan string tanggal manual.
+  // Ini aman kalau durasi melewati akhir bulan.
+  const tanggalSelesai = new Date(tanggalMulai);
+  tanggalSelesai.setDate(tanggalSelesai.getDate() + durasiPeriodeHari - 1);
+  tanggalSelesai.setHours(23, 59, 59, 999);
 
   return {
     tanggalMulai,
@@ -49,6 +64,7 @@ async function hitungPeriodeBulanIni() {
     tahun,
   };
 }
+
 
 // =====================================================
 // FUNGSI 3: Cek apakah saat ini (sekarang) dalam periode aktif?

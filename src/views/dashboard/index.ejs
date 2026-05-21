@@ -90,6 +90,52 @@
     </div>
   </div>
 
+  <% if (daftarBelumMengisi && daftarBelumMengisi.length > 0) { %>
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h5 class="card-title mb-1">Daftar PJ Belum Mengisi</h5>
+            <p class="text-muted-utama small mb-0">
+              Ruangan berikut belum memiliki aktivitas input/edit barang pada periode pengisian bulan ini.
+            </p>
+          </div>
+          <span class="badge varian-rusak"><%= daftarBelumMengisi.length %> belum mengisi</span>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Ruangan</th>
+                <th>Kode</th>
+                <th>PJ Ruangan</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% daftarBelumMengisi.forEach(function(item) { %>
+                <tr>
+                  <td><%= item.namaRuangan %></td>
+                  <td><span class="badge varian-netral"><%= item.kodeRuangan %></span></td>
+                  <td>
+                    <%= item.namaPj %>
+                    <% if (item.usernamePj && item.usernamePj !== '-') { %>
+                      <div class="text-muted-utama small">@<%= item.usernamePj %></div>
+                    <% } %>
+                  </td>
+                  <td>
+                    <span class="badge varian-rusak">Belum mengisi</span>
+                  </td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } %>
+
   <div class="card">
     <div class="card-body">
       <h5 class="card-title">Aksi Cepat</h5>
