@@ -78,7 +78,8 @@ exports.daftarBarang = async (req, res, next) => {
     }
 
     // Filter kondisi
-    if (kondisi === 'baik' || kondisi === 'rusak') {
+    const kondisiValid = ['baik', 'rusak_ringan', 'rusak_berat'];
+    if (kondisiValid.includes(kondisi)) {
       where.kondisi = kondisi;
     }
 
@@ -190,7 +191,10 @@ exports.simpanBarang = async (req, res, next) => {
     const kodeBarang = String(req.body.kodeBarang || '').trim().toUpperCase();
     const kategori = String(req.body.kategori || '').trim();
     const jumlah = parseInt(req.body.jumlah, 10);
-    const kondisi = req.body.kondisi === 'rusak' ? 'rusak' : 'baik';
+    // const kondisi = req.body.kondisi === 'rusak' ? 'rusak' : 'baik';
+    const kondisiValid = ['baik', 'rusak_ringan', 'rusak_berat'];
+    const kondisi = kondisiValid.includes(req.body.kondisi) ? req.body.kondisi : 'baik';
+
     const keterangan = String(req.body.keterangan || '').trim() || null;
     const ruanganId = String(req.body.ruanganId || '');
 
@@ -260,11 +264,11 @@ exports.simpanBarang = async (req, res, next) => {
       },
     });
 
-    if (kondisi === 'rusak') {
+    if (kondisi === 'rusak_ringan' || kondisi === 'rusak_berat') {
       await prisma.logPerbaikan.create({
         data: {
           barangId: barangBaru.id,
-          catatan: 'Dilaporkan rusak saat input awal oleh PJ.',
+          catatan: `Dilaporkan ${kondisi === 'rusak_ringan' ? 'rusak ringan' : 'rusak berat'} saat input awal oleh PJ.`,
         },
       });
     }
@@ -358,7 +362,9 @@ exports.perbaruiBarang = async (req, res, next) => {
     const kodeBarang = String(req.body.kodeBarang || '').trim().toUpperCase();
     const kategori = String(req.body.kategori || '').trim();
     const jumlah = parseInt(req.body.jumlah, 10);
-    const kondisi = req.body.kondisi === 'rusak' ? 'rusak' : 'baik';
+    // const kondisi = req.body.kondisi === 'rusak' ? 'rusak' : 'baik';
+    const kondisiValid = ['baik', 'rusak_ringan', 'rusak_berat'];
+    const kondisi = kondisiValid.includes(req.body.kondisi) ? req.body.kondisi : 'baik';
     const keterangan = String(req.body.keterangan || '').trim() || null;
     const ruanganId = String(req.body.ruanganId || '');
 
@@ -414,11 +420,12 @@ exports.perbaruiBarang = async (req, res, next) => {
     });
 
     // Kalau dari baik → rusak via edit, otomatis bikin LogPerbaikan
-    if (barangLama.kondisi === 'baik' && kondisi === 'rusak') {
+    const kondisiRusak = ['rusak_ringan', 'rusak_berat'];
+    if (barangLama.kondisi === 'baik' && kondisiRusak.includes(kondisi)) {
       await prisma.logPerbaikan.create({
         data: {
           barangId: barangLama.id,
-          catatan: 'Dilaporkan rusak melalui edit barang.',
+          catatan: `Dilaporkan ${kondisi === 'rusak_ringan' ? 'rusak ringan' : 'rusak berat'} melalui edit barang.`,
         },
       });
     }
@@ -431,50 +438,60 @@ exports.perbaruiBarang = async (req, res, next) => {
 };
 
 // ---------- POST /barang/:id/lapor-rusak (PJ only) ----------
-// Quick action — set kondisi 'rusak' tanpa buka form edit
+// Quick action — set kondisi rusak ringan/berat tanpa buka form edit
 exports.laporRusak = async (req, res, next) => {
   try {
     const user = req.userLogin;
+
     if (user.role !== 'pj') {
       req.flash('error', 'Hanya PJ Ruangan yang dapat melaporkan barang rusak.');
       return res.redirect('/barang');
     }
+
     if (!(await pjPunyaAksesKeBarang(user.id, req.params.id))) {
       req.flash('error', 'Anda tidak memiliki akses ke barang tersebut.');
       return res.redirect('/barang');
     }
 
     const barang = await prisma.barang.findUnique({ where: { id: req.params.id } });
+
     if (!barang) {
       req.flash('error', 'Barang tidak ditemukan.');
       return res.redirect('/barang');
     }
 
-    if (barang.kondisi === 'rusak') {
+    const kondisiRusak = ['rusak_ringan', 'rusak_berat'];
+    const kondisiBaru = kondisiRusak.includes(req.body.kondisi) ? req.body.kondisi : 'rusak_ringan';
+    const labelKondisi = kondisiBaru === 'rusak_berat' ? 'rusak berat' : 'rusak ringan';
+
+    if (kondisiRusak.includes(barang.kondisi)) {
       req.flash('info', `Barang "${barang.namaBarang}" sudah berstatus rusak.`);
       return res.redirect('/barang');
     }
 
     const catatan = String(req.body.catatan || '').trim() || null;
 
-    // Update + bikin log dalam 1 transaksi
     await prisma.$transaction([
       prisma.barang.update({
         where: { id: barang.id },
-        data: { kondisi: 'rusak', diperbaruiOleh: user.id },
+        data: {
+          kondisi: kondisiBaru,
+          diperbaruiOleh: user.id,
+        },
       }),
       prisma.logPerbaikan.create({
         data: {
           barangId: barang.id,
-          catatan: catatan || 'Dilaporkan rusak oleh PJ.',
+          catatan: catatan || `Dilaporkan ${labelKondisi} oleh PJ.`,
         },
       }),
     ]);
 
     req.flash(
       'sukses',
-      `Barang "${barang.namaBarang}" berhasil dilaporkan rusak. Menunggu tindak lanjut Waka Sarpras.`
+      `Barang "${barang.namaBarang}" berhasil dilaporkan ${labelKondisi}. Menunggu tindak lanjut Waka Sarpras.`
     );
+
     res.redirect('/barang');
   } catch (err) {
     next(err);

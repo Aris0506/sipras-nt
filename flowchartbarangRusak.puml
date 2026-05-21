@@ -1,6 +1,6 @@
 @startuml SIPRAS-NT_Flowchart_TindakRusak
 start
-:PJ lapor kondisi barang = "Rusak";
+:PJ lapor kondisi barang = "Rusak Ringan" atau "Rusak Berat";
 :Sistem update status barang;
 :Sistem catat di LogPerbaikan
 (tanggal_lapor);

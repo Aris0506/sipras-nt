@@ -15,7 +15,8 @@ exports.tampilDashboard = async (req, res, next) => {
       const [totalRuangan, totalBarang, totalRusak, totalPjAktif] = await Promise.all([
         prisma.ruangan.count({ where: { aktif: true } }),
         prisma.barang.count({ where: { aktif: true } }),
-        prisma.barang.count({ where: { aktif: true, kondisi: 'rusak' } }),
+        // prisma.barang.count({ where: { aktif: true, kondisi: 'rusak' } }),
+        prisma.barang.count({ where: { aktif: true, kondisi: { in: ['rusak_ringan', 'rusak_berat'] } } }),
         prisma.pengguna.count({ where: { aktif: true, role: 'pj' } }),
       ]);
 
@@ -78,7 +79,7 @@ exports.tampilDashboard = async (req, res, next) => {
     const barangRusakPJ = await prisma.barang.count({
       where: {
         aktif: true,
-        kondisi: 'rusak',
+        kondisi: { in: ['rusak_ringan', 'rusak_berat'] },
         ruangan: { pjId: user.id, aktif: true },
       },
     });

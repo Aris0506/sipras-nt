@@ -23,7 +23,8 @@ enum Role {
 
 enum Kondisi {
   baik
-  rusak
+  rusak_ringan
+  rusak_berat
 }
 
 // -----------------------------------------------------

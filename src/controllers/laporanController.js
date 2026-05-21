@@ -91,7 +91,8 @@ exports.laporanRekap = async (req, res, next) => {
       namaRuangan: r.namaRuangan,
       pj: r.pj,
       jumlahBarang: r.barang.length,
-      jumlahRusak: r.barang.filter((b) => b.kondisi === 'rusak').length,
+      // jumlahRusak: r.barang.filter((b) => b.kondisi === 'rusak').length,
+      jumlahRusak: r.barang.filter((b) => ['rusak_ringan', 'rusak_berat'].includes(b.kondisi)).length,
     }));
 
     const totalBarang = rekapPerRuangan.reduce((sum, r) => sum + r.jumlahBarang, 0);

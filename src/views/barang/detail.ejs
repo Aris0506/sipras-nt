@@ -24,8 +24,10 @@
           <dd class="col-sm-8">
             <% if (barang.kondisi === 'baik') { %>
               <span class="badge varian-sukses">Baik</span>
-            <% } else { %>
-              <span class="badge varian-rusak">Rusak</span>
+            <% } else if (barang.kondisi === 'rusak_ringan') { %>
+              <span class="badge varian-aksen">Rusak Ringan</span>
+            <% } else if (barang.kondisi === 'rusak_berat') { %>
+              <span class="badge varian-rusak">Rusak Berat</span>
             <% } %>
           </dd>
 

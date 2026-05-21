@@ -37,7 +37,8 @@
         <select name="kondisi" class="form-select">
           <option value="">Semua Kondisi</option>
           <option value="baik" <%= filter.kondisi === 'baik' ? 'selected' : '' %>>Baik</option>
-          <option value="rusak" <%= filter.kondisi === 'rusak' ? 'selected' : '' %>>Rusak</option>
+          <option value="rusak_ringan" <%= filter.kondisi === 'rusak_ringan' ? 'selected' : '' %>>Rusak Ringan</option>
+          <option value="rusak_berat" <%= filter.kondisi === 'rusak_berat' ? 'selected' : '' %>>Rusak Berat</option>
         </select>
       </div>
       <div class="col-md-2">
@@ -107,8 +108,10 @@
               <td>
                 <% if (b.kondisi === 'baik') { %>
                   <span class="badge varian-sukses">Baik</span>
-                <% } else { %>
-                  <span class="badge varian-rusak"><i class="bi bi-tools me-1"></i>Rusak</span>
+                <% } else if (b.kondisi === 'rusak_ringan') { %>
+                  <span class="badge varian-aksen"><i class="bi bi-tools me-1"></i>Rusak Ringan</span>
+                <% } else if (b.kondisi === 'rusak_berat') { %>
+                  <span class="badge varian-rusak"><i class="bi bi-exclamation-triangle me-1"></i>Rusak Berat</span>
                 <% } %>
               </td>
               <% if (userLogin.role === 'waka_sarpras') { %>
@@ -124,15 +127,39 @@
                       <i class="bi bi-pencil"></i>
                     </a>
                     <% if (b.kondisi === 'baik' && b.aktif) { %>
-                      <form action="/barang/<%= b.id %>/lapor-rusak" method="POST" class="m-0"
-                            data-confirm="Laporkan barang <%= b.namaBarang %> sebagai rusak? Waka Sarpras akan menindaklanjuti."
-                            data-confirm-title="Laporkan Barang Rusak"
-                            data-confirm-varian="bahaya"
-                            data-confirm-ok="Ya, Laporkan">
-                        <button type="submit" class="btn btn-sm btn-outline-secondary" title="Lapor Rusak">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" title="Lapor Rusak">
                           <i class="bi bi-tools"></i>
                         </button>
-                      </form>
+
+                        <ul class="dropdown-menu dropdown-menu-end">
+                          <li>
+                            <form action="/barang/<%= b.id %>/lapor-rusak" method="POST" class="m-0"
+                                  data-confirm="Laporkan barang <%= b.namaBarang %> sebagai rusak ringan? Waka Sarpras akan menindaklanjuti."
+                                  data-confirm-title="Laporkan Rusak Ringan"
+                                  data-confirm-varian="bahaya"
+                                  data-confirm-ok="Ya, Laporkan">
+                              <input type="hidden" name="kondisi" value="rusak_ringan">
+                              <button type="submit" class="dropdown-item">
+                                <i class="bi bi-tools me-2"></i>Rusak Ringan
+                              </button>
+                            </form>
+                          </li>
+
+                          <li>
+                            <form action="/barang/<%= b.id %>/lapor-rusak" method="POST" class="m-0"
+                                  data-confirm="Laporkan barang <%= b.namaBarang %> sebagai rusak berat? Waka Sarpras akan menindaklanjuti."
+                                  data-confirm-title="Laporkan Rusak Berat"
+                                  data-confirm-varian="bahaya"
+                                  data-confirm-ok="Ya, Laporkan">
+                              <input type="hidden" name="kondisi" value="rusak_berat">
+                              <button type="submit" class="dropdown-item text-danger">
+                                <i class="bi bi-exclamation-triangle me-2"></i>Rusak Berat
+                              </button>
+                            </form>
+                          </li>
+                        </ul>
+                      </div>
                     <% } %>
                     <form action="/barang/<%= b.id %>/nonaktifkan" method="POST" class="m-0"
                           data-confirm="<%= b.aktif ? 'Nonaktifkan' : 'Aktifkan kembali' %> barang <%= b.namaBarang %>?"

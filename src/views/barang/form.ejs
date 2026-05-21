@@ -59,7 +59,9 @@
             <label class="form-label">Kondisi <span class="text-danger">*</span></label>
             <select name="kondisi" class="form-select" required>
               <option value="baik" <%= data.kondisi === 'baik' ? 'selected' : '' %>>Baik</option>
-              <option value="rusak" <%= data.kondisi === 'rusak' ? 'selected' : '' %>>Rusak</option>
+              <option value="rusak_ringan" <%= data.kondisi === 'rusak_ringan' ? 'selected' : '' %>>Rusak Ringan</option>
+              <option value="rusak_berat" <%= data.kondisi === 'rusak_berat' ? 'selected' : '' %>>Rusak Berat</option>
+            </select>
             </select>
           </div>
 
@@ -102,7 +104,7 @@
       <li><strong>Kode barang otomatis</strong> mengikuti format <code>{KODE_RUANGAN}-{NOMOR_URUT}</code>. Bisa di-override manual jika sudah ada labeling fisik dari sebelumnya.</li>
       <li>Untuk barang yang punya banyak unit identik (misal: 30 kursi sama), cukup buat <strong>1 entri</strong> dengan jumlah <code>30</code>. Tidak perlu input satu-satu.</li>
       <li>Manfaatkan kolom <strong>keterangan</strong> untuk no. seri, tahun pembelian, atau catatan lain yang berguna untuk audit fisik.</li>
-      <li>Jika kondisi awal sudah rusak, Anda bisa langsung pilih <strong>Rusak</strong> — sistem otomatis bikin laporan untuk Waka Sarpras.</li>
+      <li>Jika kondisi awal sudah rusak, Anda bisa langsung pilih <strong>Rusak Ringan</strong> atau <strong>Rusak Berat</strong> — sistem otomatis bikin laporan untuk Waka Sarpras.</li>
     </ul>
   </div>
 </div>

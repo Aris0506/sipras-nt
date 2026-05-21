@@ -15,6 +15,17 @@ const MARGIN_X = 45;
 const PAGE_WIDTH = 595.28; // A4 width in pt
 const CONTENT_WIDTH = PAGE_WIDTH - MARGIN_X * 2; // 505 pt
 
+function labelKondisi(kondisi) {
+  if (kondisi === 'baik') return 'Baik';
+  if (kondisi === 'rusak_ringan') return 'Rusak Ringan';
+  if (kondisi === 'rusak_berat') return 'Rusak Berat';
+  return '-';
+}
+
+function kondisiTermasukRusak(kondisi) {
+  return ['rusak_ringan', 'rusak_berat'].includes(kondisi);
+}
+
 // =====================================================
 // HEADER (kop surat)
 // =====================================================
@@ -362,7 +373,8 @@ function gambarTabel(doc, kolom, baris) {
   ];
 
   const jumlahBaik = daftarBarang.filter((b) => b.kondisi === 'baik').length;
-  const jumlahRusak = daftarBarang.filter((b) => b.kondisi === 'rusak').length;
+  // const jumlahRusak = daftarBarang.filter((b) => b.kondisi === 'rusak').length;
+  const jumlahRusak = daftarBarang.filter((b) => kondisiTermasukRusak(b.kondisi)).length;
   baris.push([
     'Total Barang',
     `${daftarBarang.length} item  (${jumlahBaik} baik, ${jumlahRusak} rusak)`,
@@ -396,7 +408,7 @@ function gambarTabel(doc, kolom, baris) {
         { label: 'Kategori', key: 'kategori', lebar: 75 },
         { label: 'Jml', key: 'jumlah', lebar: 35, align: 'center' },
         { label: 'Kondisi', key: 'kondisi', lebar: 55, align: 'center',
-          formatter: (row) => row.kondisi === 'baik' ? 'Baik' : 'Rusak' },
+          formatter: (row) => labelKondisi(row.kondisi) },
         { label: 'Keterangan', key: 'keterangan', lebar: 65 },
       ];
     } else {
@@ -407,7 +419,7 @@ function gambarTabel(doc, kolom, baris) {
         { label: 'Kategori', key: 'kategori', lebar: 95 },
         { label: 'Jml', key: 'jumlah', lebar: 40, align: 'center' },
         { label: 'Kondisi', key: 'kondisi', lebar: 45, align: 'center',
-          formatter: (row) => row.kondisi === 'baik' ? 'Baik' : 'Rusak' },
+          formatter: (row) => labelKondisi(row.kondisi) },
       ];
     }
 
