@@ -13,7 +13,10 @@
   <% if (periode) { %>
     <%
       const fmt = (d) => new Date(d).toLocaleDateString('id-ID', {
-        day: 'numeric', month: 'long', year: 'numeric'
+        timeZone: 'Asia/Jakarta',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
       });
       const sekarang = new Date();
       const dalamPeriode = sekarang >= new Date(periode.tanggalMulai) && sekarang <= new Date(periode.tanggalSelesai);
